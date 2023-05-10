@@ -1,0 +1,41 @@
+package com.decagon.eventhubbe.domain.entities;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Document(collection = "events")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class Event {
+
+    @Id
+    private String id;
+
+    private String title;
+    private String description;
+    private String organizer;
+    private String category;
+    private String ticketClass;
+    private LocalDateTime dateTime;
+    private String location;
+    private BigDecimal ticketPrice;
+    private String bannerUrl;
+
+    @DBRef
+    private User user;
+
+    @DBRef
+    private List<EventTicket> eventTickets;
+
+}
