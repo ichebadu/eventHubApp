@@ -1,6 +1,5 @@
 package com.decagon.eventhubbe.security;
 
-import com.example.fashionapi14.Service.ServiceImpl.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
