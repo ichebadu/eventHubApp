@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class JwtUtils {
 
     @Value("${jwt.expiration}")
-    private String expiration;
+    private long expiration;
 
     public static String generateSecret(){
         return DatatypeConverter.printBase64Binary(new byte[512/8]);
