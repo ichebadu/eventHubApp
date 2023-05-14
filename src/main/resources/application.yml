@@ -1,0 +1,17 @@
+#MongoDB config
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: username
+      password: password
+      database: eventHub
+      host: localhost
+      port: 27017
+
+#JWT config
+application:
+  version: v1
+
+jwt:
+  expiration: 900000
