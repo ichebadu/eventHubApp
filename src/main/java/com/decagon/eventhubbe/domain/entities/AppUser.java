@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.domain.entities;
 
+import com.decagon.eventhubbe.dto.request.AppUserRequest;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -14,7 +15,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class AppUser {
+public class AppUser{
 
     @Id
     private String id;
@@ -26,15 +27,13 @@ public class AppUser {
     private String lastName;
     private String phone;
     private String password;
-    private String userType;
-
-    @DBRef
-    private List<Event> events;
-
-    @DBRef
-    private List<EventTicket> eventTickets;
-
-    @DBRef
-    private List<Payment> payments;
-
+    private Boolean isEnabled;
+    public AppUser(AppUserRequest appUserRequest){
+        this.email = appUserRequest.getEmail();
+        this.firstName = appUserRequest.getFirstName();
+        this.lastName = appUserRequest.getLastName();
+        this.phone = appUserRequest.getPhone();
+        this.password = appUserRequest.getPassword();
+        this.isEnabled = false;
+    }
 }

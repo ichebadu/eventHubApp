@@ -1,7 +1,6 @@
 package com.decagon.eventhubbe.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
+import com.decagon.eventhubbe.dto.request.AppUserRequest;
 
 public interface AppUserService {
-    UserDetails loadUserByUsername(String username);
 }
