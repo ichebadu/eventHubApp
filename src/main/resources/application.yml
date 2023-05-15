@@ -1,3 +1,4 @@
+
 #MongoDB config
 spring:
   data:
@@ -15,3 +16,5 @@ application:
 
 jwt:
   expiration: 900000
+server:
+  port: 8999
