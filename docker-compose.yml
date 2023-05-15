@@ -7,7 +7,7 @@ services:
     volumes:
       - mongo:/data
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
   mongo-express:
     image: mongo-express
@@ -21,7 +21,3 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongodb
 volumes:
   mongo: {}
-
-networks:
-  default:
-    name: mongodb_network
