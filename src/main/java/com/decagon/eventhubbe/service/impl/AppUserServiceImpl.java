@@ -1,13 +1,23 @@
 package com.decagon.eventhubbe.service.impl;
 
+import com.decagon.eventhubbe.domain.entities.AppUser;
+import com.decagon.eventhubbe.domain.repository.AppUserRepository;
+import com.decagon.eventhubbe.exception.AppUserNotFoundException;
+import com.decagon.eventhubbe.security.JwtService;
 import com.decagon.eventhubbe.service.AppUserService;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AppUserServiceImpl implements AppUserService {
-    @Override
-    public UserDetails loadUserByUsername(String username) {
-        return null;
+    private final AppUserRepository appUserRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+
+    public AppUser findByEmail(String email){
+        return appUserRepository.findByEmail(email)
+                .orElseThrow(()-> new AppUserNotFoundException(email));
     }
 }

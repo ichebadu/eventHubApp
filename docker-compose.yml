@@ -21,7 +21,3 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongodb
 volumes:
   mongo: {}
-
-networks:
-  default:
-    name: mongodb_network
