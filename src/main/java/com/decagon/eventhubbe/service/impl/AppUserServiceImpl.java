@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,8 +54,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest){
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(),loginRequest.getPassword());
         AppUser appUser = getUserByEmail(loginRequest.getEmail());
         if(appUser.getEnabled().equals(false)){
             throw new UserDisabledException("Account is Disabled");
@@ -62,6 +61,8 @@ public class AppUserServiceImpl implements AppUserService {
         if(passwordEncoder.matches(loginRequest.getPassword(), appUser.getPassword())){
             throw new InvalidCredentialsException("Passwords do not match");
         }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                appUser.getEmail(),appUser.getPassword());
         String accessToken = jwtService.generateToken(authentication);
         String refreshToken = jwtService.generateRefreshToken(authentication);
         JwtToken jwtToken = JwtToken.builder()
@@ -72,6 +73,7 @@ public class AppUserServiceImpl implements AppUserService {
                 .expiresAt(new Date(System.currentTimeMillis()+expiration))
                 .build();
         JwtToken savedToken = jwtTokenRepository.save(jwtToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return LoginResponse.builder()
                 .accessToken(savedToken.getAccessToken())
                 .userFullName(appUser.getFirstName()+" "+appUser.getLastName())
