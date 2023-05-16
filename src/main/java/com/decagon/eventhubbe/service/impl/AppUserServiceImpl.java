@@ -76,6 +76,7 @@ public class AppUserServiceImpl implements AppUserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return LoginResponse.builder()
                 .accessToken(savedToken.getAccessToken())
+                .refreshToken(savedToken.getRefreshToken())
                 .userFullName(appUser.getFirstName()+" "+appUser.getLastName())
                 .message("Login Successful")
                 .build();
