@@ -1,6 +1,7 @@
 package com.decagon.eventhubbe.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 @Data
 @Builder
+@AllArgsConstructor
 @JsonPropertyOrder(value = {"message","time","data"})
 public class APIResponse<T> {
     private String message;
