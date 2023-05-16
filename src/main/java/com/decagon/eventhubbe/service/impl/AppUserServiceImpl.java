@@ -40,7 +40,7 @@ public class AppUserServiceImpl implements AppUserService {
         String encodedPassword = passwordEncoder.encode(registrationRequest.getPassword());
         appUser.setPassword(encodedPassword);
 
-        AppUser savedUser = appUserRepository.save(appUser);
+        AppUser savedUser = appUserRepository.insert(appUser);
 
         String token = UUID.randomUUID().toString();
 
@@ -57,10 +57,10 @@ public class AppUserServiceImpl implements AppUserService {
         // TODO: SEND EMAIL
 
         return new RegistrationResponse(
-                registrationRequest.getEmail(),
-                registrationRequest.getFirstName(),
-                registrationRequest.getLastName(),
-                registrationRequest.getPhone(),
+                appUser.getEmail(),
+                appUser.getFirstName(),
+                appUser.getLastName(),
+                appUser.getPhone(),
                 confirmationToken.getToken(), false);
     }
 
