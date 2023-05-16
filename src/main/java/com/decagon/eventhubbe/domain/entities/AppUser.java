@@ -23,13 +23,6 @@ public class AppUser{
     private String lastName;
     private String phone;
     private String password;
-    private Boolean enabled = false;
+    private Boolean enabled;
 
-    public AppUser(String email, String firstName, String lastName, String phone, String password) {
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.password = password;
-    }
 }

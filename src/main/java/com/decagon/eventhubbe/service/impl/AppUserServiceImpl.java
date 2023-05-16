@@ -1,20 +1,29 @@
 package com.decagon.eventhubbe.service.impl;
 
 import com.decagon.eventhubbe.domain.entities.AppUser;
-import com.decagon.eventhubbe.domain.entities.ConfirmationToken;
+import com.decagon.eventhubbe.domain.entities.JwtToken;
 import com.decagon.eventhubbe.domain.repository.AppUserRepository;
+import com.decagon.eventhubbe.domain.repository.JwtTokenRepository;
+import com.decagon.eventhubbe.dto.request.LoginRequest;
 import com.decagon.eventhubbe.dto.request.RegistrationRequest;
+import com.decagon.eventhubbe.dto.response.LoginResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
 import com.decagon.eventhubbe.exception.AppUserAlreadyExistException;
+import com.decagon.eventhubbe.exception.AppUserNotFoundException;
+import com.decagon.eventhubbe.exception.InvalidCredentialsException;
+import com.decagon.eventhubbe.exception.UserDisabledException;
+import com.decagon.eventhubbe.security.JwtService;
 import com.decagon.eventhubbe.service.AppUserService;
-import com.decagon.eventhubbe.service.ConfirmationTokenService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Date;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,53 +31,66 @@ public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ConfirmationTokenService confirmationTokenService;
+    private final JwtTokenRepository jwtTokenRepository;
     private final ModelMapper modelMapper;
+    private final JwtService jwtService;
+    @Value("${jwt.expiration}")
+    private long expiration;
 
     @Override
     public RegistrationResponse register(RegistrationRequest registrationRequest) {
-        boolean userExists = appUserRepository.existsByEmail(registrationRequest.getEmail());
-
-        if (userExists) {
-            // TODO check if attributes are the same and
-            // TODO if email not confirmed, send confirmation email.
-            throw new AppUserAlreadyExistException(registrationRequest.getEmail());
-        }
-
+        validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
-
-        String encodedPassword = passwordEncoder.encode(registrationRequest.getPassword());
-        appUser.setPassword(encodedPassword);
-
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setEnabled(false);
         AppUser savedUser = appUserRepository.insert(appUser);
-
-        String token = UUID.randomUUID().toString();
-
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
-                savedUser
-        );
-
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
-
-        appUserToRegistrationRequest(appUser);
         // TODO: SEND EMAIL
-
-        return new RegistrationResponse(
-                appUser.getEmail(),
-                appUser.getFirstName(),
-                appUser.getLastName(),
-                appUser.getPhone(),
-                confirmationToken.getToken(), false);
+        return RegistrationResponse.builder()
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .message("Registration Successful")
+                .build();
+    }
+    @Override
+    public LoginResponse authenticate(LoginRequest loginRequest){
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                loginRequest.getEmail(),loginRequest.getPassword());
+        AppUser appUser = getUserByEmail(loginRequest.getEmail());
+        if(appUser.getEnabled().equals(false)){
+            throw new UserDisabledException("Account is Disabled");
+        }
+        if(passwordEncoder.matches(loginRequest.getPassword(), appUser.getPassword())){
+            throw new InvalidCredentialsException("Passwords do not match");
+        }
+        String accessToken = jwtService.generateToken(authentication);
+        String refreshToken = jwtService.generateRefreshToken(authentication);
+        JwtToken jwtToken = JwtToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .appUser(appUser)
+                .generatedAt(new Date(System.currentTimeMillis()))
+                .expiresAt(new Date(System.currentTimeMillis()+expiration))
+                .build();
+        JwtToken savedToken = jwtTokenRepository.save(jwtToken);
+        return LoginResponse.builder()
+                .accessToken(savedToken.getAccessToken())
+                .userFullName(appUser.getFirstName()+" "+appUser.getLastName())
+                .message("Login Successful")
+                .build();
     }
 
-    public void appUserToRegistrationRequest (AppUser appUser) {
-        modelMapper.map(appUser, RegistrationRequest.class);
-    }
 
-    public AppUser registrationRequestToAppUser (RegistrationRequest registrationRequest) {
+    private AppUser registrationRequestToAppUser (RegistrationRequest registrationRequest) {
         return modelMapper.map(registrationRequest, AppUser.class);
     }
+    private void validateUserExistence(String email){
+        if(appUserRepository.existsByEmail(email)){
+            throw new AppUserAlreadyExistException(email);
+        }
+    }
+    public AppUser getUserByEmail(String email){
+        return appUserRepository.findByEmail(email)
+                .orElseThrow(()-> new AppUserNotFoundException(email));
+    }
+
 }
