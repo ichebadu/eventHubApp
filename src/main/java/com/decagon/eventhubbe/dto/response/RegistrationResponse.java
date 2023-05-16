@@ -17,5 +17,5 @@ public class RegistrationResponse {
     private String lastName;
     private String phone;
     private String  confirmationToken;
-    private Boolean enabled = false;
+    private Boolean enabled;
 }
