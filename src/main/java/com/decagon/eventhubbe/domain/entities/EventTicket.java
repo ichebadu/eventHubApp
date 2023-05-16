@@ -26,7 +26,6 @@ public class EventTicket {
     private String ticketType;
     private BigDecimal price;
     private Date purchasedDate;
-
     @DBRef
     private Event event;
 
