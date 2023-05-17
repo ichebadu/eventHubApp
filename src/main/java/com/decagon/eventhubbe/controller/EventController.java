@@ -1,6 +1,7 @@
 package com.decagon.eventhubbe.controller;
 
 import com.decagon.eventhubbe.dto.EventDTO;
+import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,18 +21,13 @@ public class EventController {
 
 
     // Implementing the deletion of Event ----->
-    @DeleteMapping("/id")
-    public ResponseEntity<String> deleteEvent(
-            @PathVariable String id,
-            @RequestBody EventDTO eventDTO) {
-
-        eventDTO.setId(id);
-        eventDTO.setDeleted(true);
-
-        eventService.deleteEvent(eventDTO);
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<APIResponse<String>> deleteEvent(
+            @PathVariable String id) {
+        APIResponse<String> apiResponse =
+                new APIResponse<>(eventService.deleteEvent(id));
         return new ResponseEntity<>(
-                "Event deleted successfully",
+                apiResponse,
                 HttpStatus.OK
         );
     }

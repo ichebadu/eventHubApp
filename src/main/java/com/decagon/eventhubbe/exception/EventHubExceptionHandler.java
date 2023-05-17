@@ -33,6 +33,28 @@ public class EventHubExceptionHandler {
                 .build();
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<EventHubExceptionResponse> eventNotFound(EventNotFoundException e,
+                                                                      HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<EventHubExceptionResponse> eventNotFound(UnauthorizedException e,
+                                                                   HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.UNAUTHORIZED);
+    }
     private String saveLocalDate(LocalDateTime date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm:ss a");
         return date.format(formatter);
