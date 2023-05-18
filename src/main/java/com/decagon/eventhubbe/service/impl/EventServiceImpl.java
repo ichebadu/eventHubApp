@@ -29,7 +29,7 @@ public class EventServiceImpl implements EventService {
                 .findById(id)
                 .orElseThrow(() ->
                         new EventNotFoundException(id));
-        AppUser appUser = appUserService.findByEmail(UserUtils.getUserEmailFromContext());
+        AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
         if(!eventToDelete.getAppUser().equals(appUser)){
             throw new UnauthorizedException("Unauthorized! Event created by another user");
         }
