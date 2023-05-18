@@ -2,9 +2,7 @@ package com.decagon.eventhubbe.service.impl;
 
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Event;
-import com.decagon.eventhubbe.domain.repository.AppUserRepository;
 import com.decagon.eventhubbe.domain.repository.EventRepository;
-import com.decagon.eventhubbe.dto.EventDTO;
 import com.decagon.eventhubbe.exception.EventNotFoundException;
 import com.decagon.eventhubbe.exception.UnauthorizedException;
 import com.decagon.eventhubbe.service.EventService;

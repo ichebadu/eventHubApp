@@ -1,6 +1,5 @@
 package com.decagon.eventhubbe.service;
 
-import com.decagon.eventhubbe.dto.EventDTO;
 import org.springframework.stereotype.Service;
 
 @Service

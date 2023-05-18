@@ -1,6 +1,5 @@
 package com.decagon.eventhubbe.controller;
 
-import com.decagon.eventhubbe.dto.EventDTO;
 import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
