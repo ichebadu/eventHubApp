@@ -1,4 +1,9 @@
 package com.decagon.eventhubbe.dto.response;
 
-public class PaymentResponse {
+import lombok.Data;
+
+@Data
+public class  PaymentResponse<T> {
+    private T data;
+    private String message;
 }

@@ -1,0 +1,1 @@
+package com.decagon.eventhubbe.dto.response;import com.decagon.eventhubbe.dto.BankData;import lombok.Data;import java.util.List;@Datapublic class BanksResponse {    private boolean status;    private String message;    private List<BankData> data;    // getters and setters}
