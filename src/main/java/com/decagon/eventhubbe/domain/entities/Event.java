@@ -32,6 +32,7 @@ public class Event {
     private String location;
     private BigDecimal ticketPrice;
     private String bannerUrl;
+    private boolean isDeleted;
 
     @DBRef
     private AppUser appUser;
