@@ -33,20 +33,42 @@ public class EventHubExceptionHandler {
                 .build();
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(EventNotFoundException.class)
-    public ResponseEntity<EventHubExceptionResponse> eventNotFound(EventNotFoundException e,
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<EventHubExceptionResponse> unauthorized(UnauthorizedException e,
                                                                       HttpServletRequest request){
         EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
                 .time(saveLocalDate(LocalDateTime.now()))
                 .message(e.getMessage())
-                .statusCode(HttpStatus.NOT_FOUND.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .path(request.getRequestURI())
                 .build();
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.UNAUTHORIZED);
     }
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<EventHubExceptionResponse> eventNotFound(UnauthorizedException e,
-                                                                   HttpServletRequest request){
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<EventHubExceptionResponse> invalidCredentials(InvalidCredentialsException e,
+                                                                      HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(SamePasswordException.class)
+    public ResponseEntity<EventHubExceptionResponse> samePassword(SamePasswordException e,
+                                                                      HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(UserDisabledException.class)
+    public ResponseEntity<EventHubExceptionResponse> userDisabled(UserDisabledException e,
+                                                                      HttpServletRequest request){
         EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
                 .time(saveLocalDate(LocalDateTime.now()))
                 .message(e.getMessage())

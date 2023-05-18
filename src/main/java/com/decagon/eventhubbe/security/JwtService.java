@@ -1,21 +1,34 @@
 package com.decagon.eventhubbe.security;
 
+import com.decagon.eventhubbe.domain.entities.AppUser;
+import com.decagon.eventhubbe.domain.entities.JwtToken;
+import com.decagon.eventhubbe.domain.repository.AppUserRepository;
+import com.decagon.eventhubbe.domain.repository.JwtTokenRepository;
+import com.decagon.eventhubbe.exception.AppUserNotFoundException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtService {
-
+    private final JwtTokenRepository jwtTokenRepository;
+    private final UserDetailsService userDetailsService;
+    private final AppUserRepository appUserRepository;
     @Value("${jwt.expiration}")
     private long expiration;
 
@@ -62,6 +75,33 @@ public class JwtService {
                 .signWith(generateKey(), SignatureAlgorithm.HS512)
                 .compact();
 
+    }
+    public String generateRefreshToken(Authentication authentication){
+        String username = authentication.getName();
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(generateKey(), SignatureAlgorithm.HS512)
+                .compact();
+    }
+    public String getRefreshToken(String accessToken){
+        JwtToken jwtToken = jwtTokenRepository.findByAccessToken(accessToken);
+        return jwtToken.getRefreshToken();
+    }
+    @Transactional
+    public JwtToken generateNewTokens(String refreshToken){
+        String email = extractUsername(refreshToken);
+        AppUser appUser = appUserRepository.findByEmail(email)
+                .orElseThrow(()-> new AppUserNotFoundException(email));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                appUser.getEmail(),appUser.getPassword());
+        JwtToken jwtToken = jwtTokenRepository.findByRefreshToken(refreshToken);
+        jwtToken.setAccessToken(generateToken(authentication));
+        jwtToken.setRefreshToken(generateRefreshToken(authentication));
+        jwtToken.setExpiresAt(new Date(System.currentTimeMillis() + expiration));
+        jwtToken.setRefreshedAt(new Date(System.currentTimeMillis()));
+        return jwtToken;
     }
 
 
