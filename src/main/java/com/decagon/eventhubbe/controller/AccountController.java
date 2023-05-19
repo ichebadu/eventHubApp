@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.controller;
 
+import com.decagon.eventhubbe.domain.entities.Account;
 import com.decagon.eventhubbe.dto.RequestAccountDTO;
 import com.decagon.eventhubbe.dto.request.PaymentRequest;
 import com.decagon.eventhubbe.dto.request.SubAccountRequest;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/bank/")
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     private final AccountServiceImpl accountService;
     private final PaymentServiceImpl paymentService;
+
     /***
      *  JACKSON GET ALL BANKS PAY STACK
      * @return
@@ -32,6 +36,7 @@ public class AccountController {
                 accountService.getBankApiCodeDetails()
         );
     }
+
     /***
      * GET ACCOUNT NAME
      * JACKSON
@@ -43,10 +48,11 @@ public class AccountController {
     @GetMapping("/getName")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> getAccountName(@RequestParam String bankName,
-                                            @RequestParam String accountNumber){
+                                            @RequestParam String accountNumber) {
         return ResponseEntity.ok().body(
-                accountService.getBankCodeAndSend(bankName,accountNumber));
+                accountService.getBankCodeAndSend(bankName, accountNumber));
     }
+
     /***
      * JACKSON SAVING ACCOUNT
      * @param requestAccountDTO
@@ -54,7 +60,7 @@ public class AccountController {
      */
     @PostMapping("/create-account")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<APIResponse<RequestAccountDTO>> saveAccount(@RequestBody RequestAccountDTO requestAccountDTO){
+    public ResponseEntity<APIResponse<RequestAccountDTO>> saveAccount(@RequestBody RequestAccountDTO requestAccountDTO) {
         APIResponse<RequestAccountDTO> apiResponse = new APIResponse<>(accountService.saveAccount(requestAccountDTO));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -64,25 +70,34 @@ public class AccountController {
      * UPDATE ACCOUNT
      */
     @PutMapping("/update{accountId}")
-    public ResponseEntity<APIResponse<RequestAccountDTO>> updateAccount(@PathVariable String accountId,@RequestBody RequestAccountDTO requestAccountDTO){
-        APIResponse<RequestAccountDTO> apiResponse = new APIResponse<>(accountService.updateAccount(requestAccountDTO,accountId));
-        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    public ResponseEntity<APIResponse<RequestAccountDTO>> updateAccount(@PathVariable String accountId, @RequestBody RequestAccountDTO requestAccountDTO) {
+        APIResponse<RequestAccountDTO> apiResponse = new APIResponse<>(accountService.updateAccount(requestAccountDTO, accountId));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
     /***
      * MICHEAL JOHN API CALL
      * DELETE ACCOUNT
      */
     @DeleteMapping("/delete{accountId}")
-    public ResponseEntity<?> deleteAccount(@PathVariable String accountId){
+    public ResponseEntity<?> deleteAccount(@PathVariable String accountId) {
         accountService.deleteAccount(accountId);
         return ResponseEntity.ok().body("Deleted");
     }
 
+    @GetMapping("/subaccounts")
+    public ResponseEntity<APIResponse<List<Account>>> getAllSubAccount(){
+        APIResponse<List<Account>> listAPIResponse = new APIResponse<>(accountService.getAccount());
+        return new ResponseEntity<>(listAPIResponse,HttpStatus.OK);
+
+    }
+
     @PostMapping("/savePayment")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<APIResponse<Object>> acceptTransfer(@RequestBody PaymentRequest paymentRequest ){
-        APIResponse<Object> save =  new APIResponse<>(paymentService.acceptTransfer(paymentRequest));
-        return new ResponseEntity<>(save,HttpStatus.CREATED);
+    public ResponseEntity<APIResponse<Object>> acceptTransfer(@RequestBody PaymentRequest paymentRequest) {
+        APIResponse<Object> save = new APIResponse<>(paymentService.acceptTransfer(paymentRequest));
+        return new ResponseEntity<>(save, HttpStatus.CREATED);
     }
+
 
 }

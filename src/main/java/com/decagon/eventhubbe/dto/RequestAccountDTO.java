@@ -13,5 +13,5 @@ public class RequestAccountDTO {
     private String bankName;
     private String accountNumber;
     private String accountName;
-    private String bankCode;
+
 }
