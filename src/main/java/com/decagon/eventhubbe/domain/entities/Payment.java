@@ -25,6 +25,7 @@ public class Payment {
 
     private LocalDateTime timestamp;
 
+
     @DBRef
     private EventTicket eventTicket;
 

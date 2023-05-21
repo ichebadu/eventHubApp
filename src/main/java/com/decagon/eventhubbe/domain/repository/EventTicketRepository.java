@@ -7,6 +7,6 @@ import java.util.Optional;
 
 
 public interface EventTicketRepository extends MongoRepository<EventTicket, String> {
-    EventTicket findEventTicketByTicketNumber(String ticketNumber);
+
 
 }

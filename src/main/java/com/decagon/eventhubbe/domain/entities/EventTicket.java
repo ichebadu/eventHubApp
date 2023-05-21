@@ -20,12 +20,9 @@ public class EventTicket {
     @Id
     private String id;
 
-    @Indexed(unique = true)
-    private String ticketNumber;
-
     private String ticketType;
     private BigDecimal price;
-    private Date purchasedDate;
+    private Integer qty;
 
     @DBRef
     private Event event;
