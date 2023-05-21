@@ -8,5 +8,9 @@ import java.math.BigDecimal;
 public class PaymentRequest {
     private String email;
     private BigDecimal amount;
+    private String buyerEmail;
+    private String buyerName;
+
+    private String buyerPhone;
 
 }

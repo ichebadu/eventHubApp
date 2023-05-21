@@ -25,9 +25,13 @@ public class Payment {
 
     private LocalDateTime timestamp;
 
+    private String buyerEmail;
+    private String buyerName;
+
+    private String buyerPhone;
+
     @DBRef
     private EventTicket eventTicket;
 
-    @DBRef
-    private AppUser appUser;
+
 }
