@@ -18,7 +18,6 @@ import java.util.Optional;
 public class PasswordServiceImpl implements PasswordService {
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
-    @Transactional
     @Override
     public String resetPassword(ResetPasswordRequest request){
         AppUser appUser = findUser(request.getEmail());
@@ -26,6 +25,7 @@ public class PasswordServiceImpl implements PasswordService {
             throw new SamePasswordException("Please Choose a Different Password");
         }
         appUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        appUserRepository.save(appUser);
         return "Password Changed Successfully";
     }
     private AppUser findUser(String email){

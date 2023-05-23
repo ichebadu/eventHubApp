@@ -49,7 +49,7 @@ public class AppUserServiceImpl implements AppUserService {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setEnabled(false);
+        appUser.setEnabled(true);
         AppUser savedUser = appUserRepository.insert(appUser);
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
         // TODO: SEND EMAIL
@@ -65,7 +65,7 @@ public class AppUserServiceImpl implements AppUserService {
         if(appUser.getEnabled().equals(false)){
             throw new UserDisabledException("Account is Disabled");
         }
-        if(passwordEncoder.matches(loginRequest.getPassword(), appUser.getPassword())){
+        if(!passwordEncoder.matches(loginRequest.getPassword(), appUser.getPassword())){
             throw new InvalidCredentialsException("Passwords do not match");
         }
         Authentication authentication = new UsernamePasswordAuthenticationToken(
