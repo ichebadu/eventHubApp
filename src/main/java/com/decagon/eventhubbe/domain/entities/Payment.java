@@ -27,8 +27,7 @@ public class Payment {
 
     private String buyerEmail;
     private String buyerName;
-
-    private String buyerPhone;
+    private Integer qty;
 
     @DBRef
     private EventTicket eventTicket;

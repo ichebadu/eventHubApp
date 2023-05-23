@@ -10,7 +10,7 @@ public class PaymentRequest {
     private BigDecimal amount;
     private String buyerEmail;
     private String buyerName;
-
-    private String buyerPhone;
+    private String eventId;
+    private Integer qty;
 
 }

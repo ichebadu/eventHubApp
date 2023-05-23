@@ -94,8 +94,8 @@ public class AccountController {
 
     @PostMapping("/savePayment")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<APIResponse<Object>> acceptTransfer(@RequestBody PaymentRequest paymentRequest) {
-        APIResponse<Object> save = new APIResponse<>(paymentService.acceptTransfer(paymentRequest));
+    public ResponseEntity<APIResponse<PaymentRequest>> acceptTransfer(@RequestBody PaymentRequest paymentRequest) {
+        APIResponse<PaymentRequest> save = new APIResponse<>(paymentService.payment(paymentRequest));
         return new ResponseEntity<>(save, HttpStatus.CREATED);
     }
 
