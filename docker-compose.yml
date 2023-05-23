@@ -9,6 +9,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
+
   mongo-express:
     image: mongo-express
     container_name: mongo_express
@@ -19,5 +20,14 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=username
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
       - ME_CONFIG_MONGODB_SERVER=mongodb
+
+  eventHub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: eventhub:1.1
+    container_name: eventhub
+    links:
+      - mongodb
 volumes:
   mongo: {}
