@@ -7,6 +7,7 @@ import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.LoginResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
 import com.decagon.eventhubbe.service.AppUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,9 @@ public class AuthController {
     private final AppUserService appUserService;
 
     @PostMapping("/register")
-    public ResponseEntity<APIResponse<RegistrationResponse>> register (@RequestBody RegistrationRequest registrationRequest) {
-        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.register(registrationRequest));
+    public ResponseEntity<APIResponse<RegistrationResponse>> register (@RequestBody RegistrationRequest registrationRequest,
+                                                                       HttpServletRequest request) {
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.register(registrationRequest, request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
     @PostMapping("/authenticate")
