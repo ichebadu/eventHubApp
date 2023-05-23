@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.dto.response;
 
+import com.decagon.eventhubbe.utils.DateUtils;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,12 +19,12 @@ public class APIResponse<T> {
 
     public APIResponse() {
         this.message = "Processed Successfully";
-        this.time = saveLocalDate(LocalDateTime.now());
+        this.time = DateUtils.saveDate(LocalDateTime.now());
     }
 
     public APIResponse(T data) {
         this.message = "Processed Successfully";
-        this.time = saveLocalDate(LocalDateTime.now());
+        this.time = DateUtils.saveDate(LocalDateTime.now());
         this.data = data;
     }
 
@@ -32,10 +33,7 @@ public class APIResponse<T> {
         this.time = time;
         this.data = data;
     }
-    private String saveLocalDate(LocalDateTime date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm:ss a");
-        return date.format(formatter);
-    }
+
     // Rest of the class...
 }
 
