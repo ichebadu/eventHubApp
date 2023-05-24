@@ -1,21 +1,33 @@
 package com.decagon.eventhubbe.controller;
 
+import com.decagon.eventhubbe.dto.request.EventRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
+import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.service.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/events")
+@RequiredArgsConstructor
 public class EventController {
 
     private final EventService eventService;
 
-    @Autowired
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
+    @PostMapping("/create")
+    public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
+        APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @PostMapping(value = "/create/{eventId}/event-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<APIResponse<EventResponse>> addEventBanner(@PathVariable String eventId,
+            @RequestParam("file") MultipartFile file){
+        APIResponse<EventResponse> response = new APIResponse<>(eventService.addEventBanner(eventId,file));
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
 

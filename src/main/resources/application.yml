@@ -2,7 +2,7 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      username: username
+      username: admin
       password: password
       database: eventHub
       host: localhost
@@ -22,7 +22,7 @@ spring:
             enable: true
 
 jwt:
-  expiration: 900000
+  expiration: 90000000
 
 server:
   port: 8999
