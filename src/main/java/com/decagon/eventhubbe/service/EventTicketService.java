@@ -2,14 +2,14 @@ package com.decagon.eventhubbe.service;
 
 import com.decagon.eventhubbe.domain.entities.EventTicket;
 import com.decagon.eventhubbe.dto.request.EventTicketRequest;
+import com.decagon.eventhubbe.dto.response.TicketsSalesResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public interface EventTicketService {
-    EventTicketRequest getAllTicketByEvent(String ticketNumber);
-    List<EventTicket> getTrackListEvent(String eventId);
-    Page<EventTicket> getAllTickets(Pageable pageable);
-    List<EventTicket> getAll();
+
+    List<TicketsSalesResponse> trackTicketSales(String eventId);
 }

@@ -103,11 +103,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event findEventById(Integer eventId) {
-       return eventRepository.findEventById(eventId);
-    }
-
-    @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
