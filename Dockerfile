@@ -1,4 +1,4 @@
-FROM adoptopenjdk:16-jdk-hotspot
+FROM amazoncorretto:17
 
 ADD target/eventHub.jar eventHub.jar
 

@@ -14,15 +14,22 @@ import com.decagon.eventhubbe.exception.EventNotFoundException;
 import com.decagon.eventhubbe.exception.UnauthorizedException;
 import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.DateUtils;
+import com.decagon.eventhubbe.utils.EventUtils;
+import com.decagon.eventhubbe.utils.PageUtils;
 import com.decagon.eventhubbe.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -95,4 +102,38 @@ public class EventServiceImpl implements EventService {
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
 
+    @Override
+    public Event findEventById(Integer eventId) {
+       return eventRepository.findEventById(eventId);
+    }
+
+    @Override
+    public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Page <Event> eventPage = eventRepository.findAll(PageRequest.of(pageNo, pageSize, sort));
+        List<Event> events = new ArrayList<>();
+
+        eventPage.getContent().forEach(event -> {
+            if (EventUtils.eventValidation(event)) {
+                events.add(event);
+            }
+        });
+        System.out.println(events.get(0).getCaption());
+        List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
+                .collect(Collectors.toList());
+        return PageUtils.builder()
+                        .content(eventResponses)
+                        .pageNo(eventPage.getNumber())
+                        .pageSize(eventPage.getSize())
+                .totalElements(eventPage.getTotalElements())
+                .totalPage(eventPage.getTotalPages())
+                .isLast(eventPage.isLast())
+                .build();
+
+    }
+
+
 }
+
+
