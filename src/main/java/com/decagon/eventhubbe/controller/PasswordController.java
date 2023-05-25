@@ -4,6 +4,7 @@ import com.decagon.eventhubbe.dto.request.ResetPasswordRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.service.PasswordService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PasswordController {
     private final PasswordService passwordService;
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<APIResponse<String>> forgotPassword(@RequestParam("email") String email,
+                                                              HttpServletRequest request){
+        APIResponse<String> apiResponse = new APIResponse<>(passwordService.forgotPassword(email,request));
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    }
     @PostMapping("/reset")
     public ResponseEntity<APIResponse<String>> resetPassword(@RequestBody ResetPasswordRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(passwordService.resetPassword(request));
