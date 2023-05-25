@@ -19,16 +19,11 @@ public class EventTicket {
 
     @Id
     private String id;
-
-    @Indexed(unique = true)
-    private String ticketNumber;
-
-    private String ticketType;
-    private BigDecimal price;
-    private Date purchasedDate;
+    private String ticketClass;
+    private String description;
+    private Double ticketPrice;
+    private Integer quantity;
     @DBRef
     private Event event;
 
-    @DBRef
-    private AppUser appUser;
 }

@@ -7,13 +7,11 @@ import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.LoginResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
 import com.decagon.eventhubbe.service.AppUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -23,8 +21,9 @@ public class AuthController {
     private final AppUserService appUserService;
 
     @PostMapping("/register")
-    public ResponseEntity<APIResponse<RegistrationResponse>> register (@RequestBody RegistrationRequest registrationRequest) {
-        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.register(registrationRequest));
+    public ResponseEntity<APIResponse<RegistrationResponse>> register (@RequestBody RegistrationRequest registrationRequest,
+                                                                       HttpServletRequest request) {
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.register(registrationRequest, request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
     @PostMapping("/authenticate")

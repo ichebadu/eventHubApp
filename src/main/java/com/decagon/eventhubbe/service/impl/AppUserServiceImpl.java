@@ -8,15 +8,19 @@ import com.decagon.eventhubbe.dto.request.LoginRequest;
 import com.decagon.eventhubbe.dto.request.RegistrationRequest;
 import com.decagon.eventhubbe.dto.response.LoginResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
+import com.decagon.eventhubbe.events.register.RegistrationEvent;
 import com.decagon.eventhubbe.exception.AppUserAlreadyExistException;
 import com.decagon.eventhubbe.exception.AppUserNotFoundException;
 import com.decagon.eventhubbe.exception.InvalidCredentialsException;
 import com.decagon.eventhubbe.exception.UserDisabledException;
 import com.decagon.eventhubbe.security.JwtService;
 import com.decagon.eventhubbe.service.AppUserService;
+import com.decagon.eventhubbe.utils.EmailUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,16 +39,19 @@ public class AppUserServiceImpl implements AppUserService {
     private final JwtTokenRepository jwtTokenRepository;
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
+    private final ApplicationEventPublisher publisher;
     @Value("${jwt.expiration}")
     private long expiration;
 
     @Override
-    public RegistrationResponse register(RegistrationRequest registrationRequest) {
+    public RegistrationResponse register(RegistrationRequest registrationRequest,
+                                         HttpServletRequest request) {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setEnabled(false);
+        appUser.setEnabled(true);
         AppUser savedUser = appUserRepository.insert(appUser);
+        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
         // TODO: SEND EMAIL
         return RegistrationResponse.builder()
                 .firstName(savedUser.getFirstName())
@@ -58,7 +65,7 @@ public class AppUserServiceImpl implements AppUserService {
         if(appUser.getEnabled().equals(false)){
             throw new UserDisabledException("Account is Disabled");
         }
-        if(passwordEncoder.matches(loginRequest.getPassword(), appUser.getPassword())){
+        if(!passwordEncoder.matches(loginRequest.getPassword(), appUser.getPassword())){
             throw new InvalidCredentialsException("Passwords do not match");
         }
         Authentication authentication = new UsernamePasswordAuthenticationToken(
