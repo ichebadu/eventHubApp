@@ -1,14 +1,21 @@
+payment:
+  key: sk_test_652cb496246c20a1a51456bdf96c12485b37cf7c
 spring:
   data:
     mongodb:
-      authentication-database: admin
-      username: admin
-      password: password
-      database: eventHub
-      host: localhost
-      port: 27017
-  application:
-    name: event-hub
+      uri: mongodb+srv://jwsven:TjIfr1p3iJ9gQulK@jwsven.tik4weo.mongodb.net/mydatabase?retryWrites=true&w=majority
+      database: event_db
+
+
+  #    mongodb:
+#      authentication-database: admin
+#      username: admin
+#      password: password
+#      database: eventHub
+#      host: localhost
+#      port: 27017
+#  application:
+#    name: event-hub
   mail:
     host: smtp.gmail.com
     port: 587
@@ -24,6 +31,7 @@ spring:
 jwt:
   expiration: 90000000
 
+v1: 1
 server:
-  port: 8999
+  port: 8080
 
