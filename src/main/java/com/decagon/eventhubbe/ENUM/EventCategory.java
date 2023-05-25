@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.ENUM;
-public enum EventCategory {
+public enum
+EventCategory {
     FOOD_AND_DRINKS("Food & Drinks"),
     FILM_MEDIA_AND_ENTERTAINMENT("Film Media & Entertainment"),
     EVENT_AND_LIFESTYLE("Event & Lifestyle"),
