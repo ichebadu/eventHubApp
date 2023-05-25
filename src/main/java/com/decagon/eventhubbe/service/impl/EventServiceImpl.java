@@ -27,13 +27,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-
-
     private final EventRepository eventRepository;
     private final EventTicketRepository eventTicketRepository;
     private final AppUserServiceImpl appUserService;
     private final ModelMapper modelMapper;
-
     @Override
     public EventResponse create(EventRequest request) {
         AppUser user = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
