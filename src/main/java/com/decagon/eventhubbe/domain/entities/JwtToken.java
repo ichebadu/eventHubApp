@@ -1,29 +1,28 @@
 package com.decagon.eventhubbe.domain.entities;
-
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
-@Document(collection = "tickets")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @Builder
-public class EventTicket {
-
+@Document(collection = "jwt_token")
+public class JwtToken {
     @Id
     private String id;
-    private String ticketClass;
-    private String description;
-    private Double ticketPrice;
-    private Integer quantity;
+    @Indexed(unique = true)
+    private String accessToken;
+    @Indexed(unique = true)
+    private String refreshToken;
     @DBRef
-    private Event event;
+    private AppUser appUser;
 
+    private Date generatedAt;
+    private Date expiresAt;
+    private Date refreshedAt;
 }

@@ -1,21 +1,15 @@
 package com.decagon.eventhubbe.dto.request;
 
-import com.decagon.eventhubbe.domain.entities.AppUser;
-import com.decagon.eventhubbe.domain.entities.Event;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.Date;
-@Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class EventTicketRequest {
-    private String ticketNumber;
-    private String ticketType;
-    private BigDecimal price;
-    private Date purchasedDate;
-    private Event event;
-
-    private AppUser appUser;
+    private String ticketClass;
+    private String description;
+    private Double ticketPrice;
+    private Integer quantity;
 }
