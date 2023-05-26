@@ -44,6 +44,17 @@ public class EventController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<APIResponse<String>> updateEvent(
+            @PathVariable String id,
+            @RequestBody Event updateEvent
+    ){
+        APIResponse<String> apiResponse = new APIResponse<>(eventService.updateEvent(id, updateEvent));
+        return new ResponseEntity<>(
+                apiResponse, HttpStatus.OK
+        );
+    }
+
     // Implementing the deletion of Event ----->
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<String>> deleteEvent(
