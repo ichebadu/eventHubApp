@@ -77,23 +77,18 @@ public class AccountController {
         APIResponse<RequestAccountDTO> apiResponse = new APIResponse<>(accountService.updateAccount(requestAccountDTO, accountId));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-
     /***
      * MICHEAL JOHN API CALL
      * DELETE ACCOUNT
      */
     @DeleteMapping("/delete{accountId}")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> deleteAccount(@PathVariable String accountId) {
         accountService.deleteAccount(accountId);
         return ResponseEntity.ok().body("Deleted");
     }
 
-    @PostMapping("/savePayment")
-    @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<APIResponse<?>> acceptTransfer(@RequestBody PaymentRequest paymentRequest) {
-        APIResponse<?> save = new APIResponse<>(paymentService.payment(paymentRequest));
-        return new ResponseEntity<>(save, HttpStatus.CREATED);
-    }
+
 
 
 }
