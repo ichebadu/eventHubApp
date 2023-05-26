@@ -64,12 +64,5 @@ public class EventController {
         APIResponse<String> apiResponse = new APIResponse<>(eventService.deleteEvent(id));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-    @GetMapping
-    public ResponseEntity<APIResponse<List<Event>>> allevent() {
-        APIResponse<List<Event>> apiResponse =
-                new APIResponse<>(eventService.getAllEvent());
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK
-        );
-    }
 
 }

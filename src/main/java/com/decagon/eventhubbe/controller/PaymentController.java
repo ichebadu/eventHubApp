@@ -17,10 +17,8 @@ public class PaymentController {
 
     @PostMapping("/event/{eventId}/ticket")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<APIResponse<String>> makePayment(@RequestBody PaymentRequest paymentRequest,
-             @PathVariable String eventId){
-        APIResponse<String> apiResponse = new APIResponse<>(
-                paymentService.makePayment(paymentRequest,eventId));
+    public ResponseEntity<APIResponse<String>> makePayment(@RequestBody PaymentRequest paymentRequest, @PathVariable String eventId){
+        APIResponse<String> apiResponse = new APIResponse<>(paymentService.makePayment(paymentRequest,eventId));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 }

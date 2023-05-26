@@ -3,6 +3,7 @@ package com.decagon.eventhubbe.domain.entities;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
@@ -24,6 +25,8 @@ public class AppUser{
     private String phone;
     private String password;
     private Boolean enabled;
+    @DBRef
+    private Account account;
 
 
 
