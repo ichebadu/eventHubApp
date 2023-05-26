@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.controller;
 
+import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.dto.request.EventRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.EventResponse;
