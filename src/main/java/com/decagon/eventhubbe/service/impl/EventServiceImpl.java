@@ -146,6 +146,32 @@ public class EventServiceImpl implements EventService {
 
     }
 
+    @Transactional
+    @Override
+    public String updateEvent(String id, Event updateEvent) {
+        Event eventToUpdate = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+
+        eventToUpdate.setTitle(updateEvent.getTitle());
+        eventToUpdate.setCaption(updateEvent.getCaption());
+        eventToUpdate.setDescription(updateEvent.getDescription());
+        eventToUpdate.setOrganizer(updateEvent.getOrganizer());
+        eventToUpdate.setCategory(updateEvent.getCategory());
+        eventToUpdate.setLocation(updateEvent.getLocation());
+        eventToUpdate.setStartDate(updateEvent.getStartDate());
+        eventToUpdate.setEndDate(updateEvent.getEndDate());
+        eventToUpdate.setStartTime(updateEvent.getStartTime());
+        eventToUpdate.setEndTime(updateEvent.getEndTime());
+        eventToUpdate.setBannerUrl(updateEvent.getBannerUrl());
+        eventToUpdate.setAppUser(updateEvent.getAppUser());
+        eventToUpdate.setEventTickets(updateEvent.getEventTickets());
+
+        eventRepository.save(eventToUpdate);
+
+        return "Event with ID: " + id + " updated successfully";
+    }
+
+
     public GeoResponse getGeoDetails(@RequestParam EventRequest location) {
         UriComponents uri = UriComponentsBuilder.newInstance()
                 .scheme("https")
@@ -156,18 +182,6 @@ public class EventServiceImpl implements EventService {
                 .build();
         ResponseEntity<GeoResponse> response = new RestTemplate().getForEntity(uri.toUriString(), GeoResponse.class);
 
-        return response.getBody();
-    }
-
-    private String extractActualLocation(GeoResponse geoDetails) {
-        if (geoDetails != null && geoDetails.getResult() != null && geoDetails.getResult().length > 0) {
-            Result firstResult = geoDetails.getResult()[0];
-            if (firstResult.getAddress() != null) {
-                return firstResult.getAddress();
-            }
-        }
-        return "Unknown Location"; // Return null if the actual location cannot be extracted
-    }
 }
 
 
