@@ -14,8 +14,7 @@ public interface EventService {
     EventResponse create(EventRequest request);
 
     EventResponse addEventBanner(String eventId, MultipartFile file);
-
     //deletion of event ------>
     String deleteEvent(String id);
-    List<Event> getAllEvent();
+
 }

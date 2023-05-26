@@ -98,8 +98,6 @@ public class EventServiceImpl implements EventService {
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
 
-    public List<Event> getAllEvent(){
-        return eventRepository.findAll();
-    }
+
 
 }
