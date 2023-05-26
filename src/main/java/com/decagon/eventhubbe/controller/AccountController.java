@@ -88,12 +88,6 @@ public class AccountController {
         return ResponseEntity.ok().body("Deleted");
     }
 
-    @GetMapping("/subaccounts")
-    public ResponseEntity<APIResponse<List<Account>>> getAllSubAccount(){
-        APIResponse<List<Account>> listAPIResponse = new APIResponse<>(accountService.getAccount());
-        return new ResponseEntity<>(listAPIResponse,HttpStatus.OK);
-
-    }
     @PostMapping("/savePayment")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<APIResponse<?>> acceptTransfer(@RequestBody PaymentRequest paymentRequest) {

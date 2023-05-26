@@ -2,7 +2,6 @@ package com.decagon.eventhubbe.service.impl;
 
 import com.decagon.eventhubbe.ENUM.EventCategory;
 import com.decagon.eventhubbe.config.CloudinaryConfig;
-import com.decagon.eventhubbe.domain.entities.Account;
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.domain.entities.EventTicket;
@@ -16,15 +15,22 @@ import com.decagon.eventhubbe.exception.EventNotFoundException;
 import com.decagon.eventhubbe.exception.UnauthorizedException;
 import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.DateUtils;
+import com.decagon.eventhubbe.utils.EventUtils;
+import com.decagon.eventhubbe.utils.PageUtils;
 import com.decagon.eventhubbe.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -107,7 +113,7 @@ public class EventServiceImpl implements EventService {
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Page <Event> eventPage = eventRepository.findAll(PageRequest.of(pageNo, pageSize, sort));
+        Page<Event> eventPage = eventRepository.findAll(PageRequest.of(pageNo, pageSize, sort));
         List<Event> events = new ArrayList<>();
 
         eventPage.getContent().forEach(event -> {
