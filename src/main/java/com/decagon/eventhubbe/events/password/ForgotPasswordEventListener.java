@@ -1,4 +1,4 @@
-package com.decagon.eventhubbe.events.register;
+package com.decagon.eventhubbe.events.password;
 
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.ConfirmationToken;
@@ -16,16 +16,16 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class RegistrationEventListener implements ApplicationListener<RegistrationEvent> {
+public class ForgotPasswordEventListener implements ApplicationListener<ForgotPasswordEvent> {
     private final ConfirmationTokenService confirmationTokenService;
     private final JavaMailSender javaMailSender;
     @Override
-    public void onApplicationEvent(RegistrationEvent event) {
+    public void onApplicationEvent(ForgotPasswordEvent event) {
         AppUser appUser = event.getAppUser();
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(token, appUser);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-        String url = event.getApplicationUrl()+"/api/v1/auth/verify-email?token="+token;
+        String url = event.getApplicationUrl()+"/api/v1/auth/verify-password-token?token="+token;
         try{
             sendConfirmationToken(url,appUser);
         }catch(UnsupportedEncodingException | MessagingException e){
@@ -34,17 +34,16 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
     }
 
     public void sendConfirmationToken(String url, AppUser appUser) throws MessagingException, UnsupportedEncodingException {
-        String subject = "Email Verification";
+        String subject = "Password Reset Request";
         String senderName = "Event Hub Inc.";
         String mailContent = "<p> Hi, "+appUser.getFirstName()+" </p>"+
                 "<p> Welcome to Event Hub Inc. </p>"+
-                "<p>Thank you for registering with us, "+""+
-                "Please, follow the link below to complete your registration. </p>" +
-                "<a href=\""+url+"\"> Verify your email to activate your account</a>" +
+                "<p>Please, follow the link below to reset your password. </p>" +
+                "<a href=\""+url+"\"> Click here</a>" +
                 "<p> Thank you <br>" + senderName;
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
-        helper.setFrom("registration@eventhub.com",senderName);
+        helper.setFrom("resetpassword@eventhub.com",senderName);
         helper.setSubject(subject);
         helper.setTo(appUser.getEmail());
         helper.setText(mailContent,true);

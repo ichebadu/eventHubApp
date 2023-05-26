@@ -98,6 +98,38 @@ public class EventServiceImpl implements EventService {
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
 
+    @Override
+    public Event findEventById(Integer eventId) {
+       return eventRepository.findEventById(eventId);
+    }
+
+    @Override
+    public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Page <Event> eventPage = eventRepository.findAll(PageRequest.of(pageNo, pageSize, sort));
+        List<Event> events = new ArrayList<>();
+
+        eventPage.getContent().forEach(event -> {
+            if (EventUtils.eventValidation(event)) {
+                events.add(event);
+            }
+        });
+        System.out.println(events.get(0).getCaption());
+        List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
+                .collect(Collectors.toList());
+        return PageUtils.builder()
+                        .content(eventResponses)
+                        .pageNo(eventPage.getNumber())
+                        .pageSize(eventPage.getSize())
+                .totalElements(eventPage.getTotalElements())
+                .totalPage(eventPage.getTotalPages())
+                .isLast(eventPage.isLast())
+                .build();
+
+    }
 
 
 }
+
+
