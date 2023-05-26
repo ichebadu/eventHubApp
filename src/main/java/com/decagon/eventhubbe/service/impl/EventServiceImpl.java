@@ -85,7 +85,6 @@ public class EventServiceImpl implements EventService {
         savedEvent.setEventTickets(eventTicketRepository.findAllByEvent(savedEvent));
         return modelMapper.map(eventRepository.save(savedEvent), EventResponse.class);
     }
-
     @Override
     public EventResponse addEventBanner(String eventId, MultipartFile file){
         Event event = eventRepository
@@ -115,10 +114,6 @@ public class EventServiceImpl implements EventService {
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
 
-    @Override
-    public Event findEventById(Integer eventId) {
-       return eventRepository.findEventById(eventId);
-    }
 
     @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
@@ -172,7 +167,7 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    public GeoResponse getGeoDetails(@RequestParam EventRequest location) {
+    private GeoResponse getGeoDetails(@RequestParam EventRequest location) {
         UriComponents uri = UriComponentsBuilder.newInstance()
                 .scheme("https")
                 .host("maps.googleapis.com")
@@ -182,6 +177,18 @@ public class EventServiceImpl implements EventService {
                 .build();
         ResponseEntity<GeoResponse> response = new RestTemplate().getForEntity(uri.toUriString(), GeoResponse.class);
 
+        return response.getBody();
+    }
+
+    private String extractActualLocation(GeoResponse geoDetails) {
+        if (geoDetails != null && geoDetails.getResult() != null && geoDetails.getResult().length > 0) {
+            Result firstResult = geoDetails.getResult()[0];
+            if (firstResult.getAddress() != null) {
+                return firstResult.getAddress();
+            }
+        }
+        return "Unknown Location";
+    }
 }
 
 
