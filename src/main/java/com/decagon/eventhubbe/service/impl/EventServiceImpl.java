@@ -108,6 +108,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Event getEventById(String id) {
+        return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id)) ;
+    }
+
+    @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -158,6 +163,11 @@ public class EventServiceImpl implements EventService {
         return "Event with ID: " + id + " updated successfully";
     }
 
+    @Override
+    public EventResponse convertToEventResponse(Event event) {
+        EventResponse eventResponse = modelMapper.map(EventResponse.class);
+        return eventResponse;
+    }
 
 
 }

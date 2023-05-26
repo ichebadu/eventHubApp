@@ -8,6 +8,7 @@ import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.PageConstant;
 import com.decagon.eventhubbe.utils.PageUtils;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/create")
     public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
@@ -44,6 +46,16 @@ public class EventController {
 
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEvent(pageNo, pageSize, sortBy, sortDir));
         return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse<EventResponse>> getEventById(
+            @PathVariable String id
+    ){
+        Event event = eventService.getEventById(id);
+        EventResponse eventResponse = modelMapper.map(event, EventResponse.class);
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PutMapping("/{id}")

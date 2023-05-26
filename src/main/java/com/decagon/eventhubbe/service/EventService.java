@@ -22,7 +22,11 @@ public interface EventService {
 
     Event findEventById(Integer eventId);
 
+    Event getEventById(String id);
+
     PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
 
     String updateEvent(String id, Event updateEvent);
+
+    EventResponse convertToEventResponse(Event event);
 }
