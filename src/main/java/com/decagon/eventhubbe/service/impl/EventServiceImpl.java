@@ -102,10 +102,6 @@ public class EventServiceImpl implements EventService {
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
 
-    @Override
-    public Event findEventById(Integer eventId) {
-       return eventRepository.findEventById(eventId);
-    }
 
     @Override
     public Event getEventById(String id) {
@@ -124,7 +120,6 @@ public class EventServiceImpl implements EventService {
                 events.add(event);
             }
         });
-        System.out.println(events.get(0).getCaption());
         List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
                 .collect(Collectors.toList());
         return PageUtils.builder()
