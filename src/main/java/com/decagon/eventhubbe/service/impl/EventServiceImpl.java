@@ -128,6 +128,32 @@ public class EventServiceImpl implements EventService {
 
     }
 
+    @Transactional
+    @Override
+    public String updateEvent(String id, Event updateEvent) {
+        Event eventToUpdate = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+
+        eventToUpdate.setTitle(updateEvent.getTitle());
+        eventToUpdate.setCaption(updateEvent.getCaption());
+        eventToUpdate.setDescription(updateEvent.getDescription());
+        eventToUpdate.setOrganizer(updateEvent.getOrganizer());
+        eventToUpdate.setCategory(updateEvent.getCategory());
+        eventToUpdate.setLocation(updateEvent.getLocation());
+        eventToUpdate.setStartDate(updateEvent.getStartDate());
+        eventToUpdate.setEndDate(updateEvent.getEndDate());
+        eventToUpdate.setStartTime(updateEvent.getStartTime());
+        eventToUpdate.setEndTime(updateEvent.getEndTime());
+        eventToUpdate.setBannerUrl(updateEvent.getBannerUrl());
+        eventToUpdate.setAppUser(updateEvent.getAppUser());
+        eventToUpdate.setEventTickets(updateEvent.getEventTickets());
+
+        eventRepository.save(eventToUpdate);
+
+        return "Event with ID: " + id + " updated successfully";
+    }
+
+
 
 }
 
