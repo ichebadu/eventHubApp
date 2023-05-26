@@ -1,12 +1,11 @@
 package com.decagon.eventhubbe.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class EventTicketRequest {
     private String ticketClass;
     private String description;
