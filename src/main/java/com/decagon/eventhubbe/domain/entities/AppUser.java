@@ -19,7 +19,6 @@ public class AppUser{
 
     @Indexed(unique = true)
     private String email;
-
     private String firstName;
     private String lastName;
     private String phone;
