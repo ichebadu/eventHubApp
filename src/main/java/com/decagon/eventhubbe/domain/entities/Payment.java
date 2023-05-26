@@ -23,11 +23,14 @@ public class Payment {
     @Indexed(unique = true)
     private BigDecimal amount;
 
-    private LocalDateTime timestamp;
+    private String purchaseDate;
+
+    private String buyerEmail;
+    private String buyerName;
+    private Integer qty;
 
     @DBRef
     private EventTicket eventTicket;
-
     @DBRef
-    private AppUser appUser;
+    private Event event;
 }
