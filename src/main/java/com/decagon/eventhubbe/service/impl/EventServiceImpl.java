@@ -163,11 +163,6 @@ public class EventServiceImpl implements EventService {
         return "Event with ID: " + id + " updated successfully";
     }
 
-    @Override
-    public EventResponse convertToEventResponse(Event event) {
-        EventResponse eventResponse = modelMapper.map(EventResponse.class);
-        return eventResponse;
-    }
 
 
 }

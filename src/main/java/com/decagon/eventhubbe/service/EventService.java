@@ -28,5 +28,4 @@ public interface EventService {
 
     String updateEvent(String id, Event updateEvent);
 
-    EventResponse convertToEventResponse(Event event);
 }
