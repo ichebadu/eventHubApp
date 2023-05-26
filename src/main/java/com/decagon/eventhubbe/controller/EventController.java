@@ -1,6 +1,5 @@
 package com.decagon.eventhubbe.controller;
 
-import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.dto.request.EventRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.EventResponse;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/events")
