@@ -29,7 +29,7 @@ public class JwtService {
     private final JwtTokenRepository jwtTokenRepository;
     private final UserDetailsService userDetailsService;
     private final AppUserRepository appUserRepository;
-    @Value("${application.security.jwt.expiration}")
+    @Value("${jwt.expiration}")
     private long expiration;
 
     private String generateSecret(){
