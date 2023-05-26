@@ -105,11 +105,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event findEventById(Integer eventId) {
-       return eventRepository.findEventById(eventId);
-    }
-
-    @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -134,6 +129,32 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
+
+    @Transactional
+    @Override
+    public String updateEvent(String id, Event updateEvent) {
+        Event eventToUpdate = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+
+        eventToUpdate.setTitle(updateEvent.getTitle());
+        eventToUpdate.setCaption(updateEvent.getCaption());
+        eventToUpdate.setDescription(updateEvent.getDescription());
+        eventToUpdate.setOrganizer(updateEvent.getOrganizer());
+        eventToUpdate.setCategory(updateEvent.getCategory());
+        eventToUpdate.setLocation(updateEvent.getLocation());
+        eventToUpdate.setStartDate(updateEvent.getStartDate());
+        eventToUpdate.setEndDate(updateEvent.getEndDate());
+        eventToUpdate.setStartTime(updateEvent.getStartTime());
+        eventToUpdate.setEndTime(updateEvent.getEndTime());
+        eventToUpdate.setBannerUrl(updateEvent.getBannerUrl());
+        eventToUpdate.setAppUser(updateEvent.getAppUser());
+        eventToUpdate.setEventTickets(updateEvent.getEventTickets());
+
+        eventRepository.save(eventToUpdate);
+
+        return "Event with ID: " + id + " updated successfully";
+    }
+
 
 
 }

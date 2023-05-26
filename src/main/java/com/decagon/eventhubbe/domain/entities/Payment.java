@@ -31,9 +31,6 @@ public class Payment {
 
     @DBRef
     private EventTicket eventTicket;
-
     @DBRef
     private Event event;
-
-
 }
