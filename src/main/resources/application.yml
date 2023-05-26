@@ -29,7 +29,7 @@ spring:
             enable: true
 
 jwt:
-  expiration: 90000000
+  expiration: 900000000
 
 v1: 1
 server:

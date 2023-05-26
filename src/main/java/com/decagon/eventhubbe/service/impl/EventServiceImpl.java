@@ -2,9 +2,11 @@ package com.decagon.eventhubbe.service.impl;
 
 import com.decagon.eventhubbe.ENUM.EventCategory;
 import com.decagon.eventhubbe.config.CloudinaryConfig;
+import com.decagon.eventhubbe.domain.entities.Account;
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.domain.entities.EventTicket;
+import com.decagon.eventhubbe.domain.repository.AccountRepository;
 import com.decagon.eventhubbe.domain.repository.EventRepository;
 import com.decagon.eventhubbe.domain.repository.EventTicketRepository;
 import com.decagon.eventhubbe.dto.request.EventRequest;
@@ -30,10 +32,14 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventTicketRepository eventTicketRepository;
     private final AppUserServiceImpl appUserService;
+    private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
     @Override
     public EventResponse create(EventRequest request) {
         AppUser user = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
+        if(!accountRepository.existsByAppUser(user)){
+            throw new RuntimeException("USER NEED TO UPDATE HIS PROFILE");
+        }
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -90,6 +96,10 @@ public class EventServiceImpl implements EventService {
         }
         eventToDelete.setDeleted(true);
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
+    }
+
+    public List<Event> getAllEvent(){
+        return eventRepository.findAll();
     }
 
 }

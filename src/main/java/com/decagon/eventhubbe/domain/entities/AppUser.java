@@ -25,4 +25,7 @@ public class AppUser{
     private String password;
     private Boolean enabled;
 
+
+
+
 }
