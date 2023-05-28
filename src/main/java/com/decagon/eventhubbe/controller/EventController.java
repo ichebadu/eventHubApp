@@ -67,12 +67,8 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<String>> deleteEvent(
             @PathVariable String id) {
-        APIResponse<String> apiResponse =
-                new APIResponse<>(eventService.deleteEvent(id));
-        return new ResponseEntity<>(
-                apiResponse,
-                HttpStatus.OK
-        );
+        APIResponse<String> apiResponse = new APIResponse<>(eventService.deleteEvent(id));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
 }

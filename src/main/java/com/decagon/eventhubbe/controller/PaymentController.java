@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @PostMapping("/event/{eventId}/ticket/{ticketId}")
-    public ResponseEntity<APIResponse<String>> makePayment
-            (@RequestBody PaymentRequest paymentRequest,
-             @PathVariable String eventId, @PathVariable String ticketId){
-        APIResponse<String> apiResponse = new APIResponse<>(
-                paymentService.makePayment(paymentRequest,eventId,ticketId));
+    @PostMapping("/event/{eventId}/ticket")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<APIResponse<String>> makePayment(@RequestBody PaymentRequest paymentRequest, @PathVariable String eventId){
+        APIResponse<String> apiResponse = new APIResponse<>(paymentService.makePayment(paymentRequest,eventId));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 }
