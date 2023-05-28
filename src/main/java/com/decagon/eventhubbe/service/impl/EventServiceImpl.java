@@ -103,6 +103,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventResponse getEventById(String id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+        return modelMapper.map(event, EventResponse.class);
+
+    }
+
+    @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -114,7 +122,6 @@ public class EventServiceImpl implements EventService {
                 events.add(event);
             }
         });
-        System.out.println(events.get(0).getCaption());
         List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
                 .collect(Collectors.toList());
         return PageUtils.builder()

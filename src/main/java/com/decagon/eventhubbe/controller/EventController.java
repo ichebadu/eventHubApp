@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -35,7 +34,7 @@ public class EventController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @GetMapping("/view-event")
+    @GetMapping("/view-event/")
     public ResponseEntity<APIResponse<PageUtils>> findAllEvents(
             @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
             @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
@@ -44,6 +43,13 @@ public class EventController {
 
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEvent(pageNo, pageSize, sortBy, sortDir));
         return ResponseEntity.ok().body(apiResponse);
+    }
+
+    @GetMapping("/view-event/{id}")
+    public ResponseEntity<APIResponse<EventResponse>> getEventById(
+            @PathVariable String id){
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.getEventById(id));
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PutMapping("/{id}")
