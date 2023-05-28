@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,8 +103,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event findEventById(Integer eventId) {
-       return eventRepository.findEventById(eventId);
+    public EventResponse getEventById(String id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+        return modelMapper.map(event, EventResponse.class);
+
     }
 
     @Override

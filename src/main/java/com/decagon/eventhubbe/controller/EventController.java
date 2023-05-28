@@ -8,14 +8,12 @@ import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.PageConstant;
 import com.decagon.eventhubbe.utils.PageUtils;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -23,7 +21,6 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
-    private final ModelMapper modelMapper;
 
     @PostMapping("/create")
     public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
