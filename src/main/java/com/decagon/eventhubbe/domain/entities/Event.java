@@ -33,6 +33,7 @@ public class Event {
     private String endTime;
     private String bannerUrl;
     private String createdAt;
+    private LocalDateTime date;
     private boolean isDeleted;
 
     @DBRef

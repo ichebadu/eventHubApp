@@ -7,6 +7,7 @@ import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.domain.entities.EventTicket;
 import com.decagon.eventhubbe.domain.entities.geoLocation.GeoResponse;
 import com.decagon.eventhubbe.domain.entities.geoLocation.Result;
+import com.decagon.eventhubbe.domain.repository.AccountRepository;
 import com.decagon.eventhubbe.domain.repository.EventRepository;
 import com.decagon.eventhubbe.domain.repository.EventTicketRepository;
 import com.decagon.eventhubbe.dto.request.EventRequest;
@@ -44,18 +45,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
+
     private static final Object API_KEY = "AIzaSyA22GBhIK3LwSHcYDlB8UYJ4x1IoGeuqvM";
 
     private final EventRepository eventRepository;
     private final EventTicketRepository eventTicketRepository;
     private final AppUserServiceImpl appUserService;
+    private final AccountRepository accountRepository;
     private final ModelMapper modelMapper;
-
     @Override
     public EventResponse create(EventRequest request) {
         AppUser user = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
+
         GeoResponse geoDetails = getGeoDetails(request);
         String actualLocation = extractActualLocation(geoDetails);
+
+        if(!accountRepository.existsByAppUser(user)){
+            throw new RuntimeException("USER NEED TO UPDATE HIS PROFILE");
+        }
         Event event = Event.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -116,10 +123,18 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
+    public EventResponse getEventById(String id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
+        return modelMapper.map(event, EventResponse.class);
+
+    }
+
+    @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Page <Event> eventPage = eventRepository.findAll(PageRequest.of(pageNo, pageSize, sort));
+        Page<Event> eventPage = eventRepository.findAll(PageRequest.of(pageNo, pageSize, sort));
         List<Event> events = new ArrayList<>();
 
         eventPage.getContent().forEach(event -> {
@@ -127,7 +142,6 @@ public class EventServiceImpl implements EventService {
                 events.add(event);
             }
         });
-        System.out.println(events.get(0).getCaption());
         List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
                 .collect(Collectors.toList());
         return PageUtils.builder()
