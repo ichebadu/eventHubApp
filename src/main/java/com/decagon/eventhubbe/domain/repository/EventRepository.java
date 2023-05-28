@@ -12,6 +12,4 @@ public interface EventRepository extends MongoRepository<Event, String> {
 
     // Delete event by title
     void deleteByTitle(String title);
-
-    Event findEventById(Integer eventId);
 }
