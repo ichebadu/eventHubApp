@@ -19,6 +19,7 @@ import java.util.UUID;
 public class RegistrationEventListener implements ApplicationListener<RegistrationEvent> {
     private final ConfirmationTokenService confirmationTokenService;
     private final JavaMailSender javaMailSender;
+
     @Override
     public void onApplicationEvent(RegistrationEvent event) {
         AppUser appUser = event.getAppUser();
