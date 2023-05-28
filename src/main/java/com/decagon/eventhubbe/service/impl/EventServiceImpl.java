@@ -103,13 +103,9 @@ public class EventServiceImpl implements EventService {
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
 
-
     @Override
-    public EventResponse getEventById(String id) {
-            Event event = eventRepository.findById(id)
-                    .orElseThrow(() -> new EventNotFoundException(id));
-        return modelMapper.map(event, EventResponse.class);
-
+    public Event findEventById(Integer eventId) {
+       return eventRepository.findEventById(eventId);
     }
 
     @Override
