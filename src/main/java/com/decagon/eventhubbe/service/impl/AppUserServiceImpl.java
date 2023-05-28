@@ -49,10 +49,9 @@ public class AppUserServiceImpl implements AppUserService {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setEnabled(true);
+        appUser.setEnabled(false);
         AppUser savedUser = appUserRepository.insert(appUser);
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
-        // TODO: SEND EMAIL
         return RegistrationResponse.builder()
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())
