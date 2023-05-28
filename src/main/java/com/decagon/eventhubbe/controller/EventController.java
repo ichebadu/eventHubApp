@@ -37,7 +37,7 @@ public class EventController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @GetMapping("/view-event")
+    @GetMapping("/view-event/")
     public ResponseEntity<APIResponse<PageUtils>> findAllEvents(
             @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
             @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
@@ -48,13 +48,10 @@ public class EventController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/view-event/{id}")
     public ResponseEntity<APIResponse<EventResponse>> getEventById(
-            @PathVariable String id
-    ){
-        Event event = eventService.getEventById(id);
-        EventResponse eventResponse = modelMapper.map(event, EventResponse.class);
-        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventResponse);
+            @PathVariable String id){
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.getEventById(id));
         return ResponseEntity.ok(apiResponse);
     }
 

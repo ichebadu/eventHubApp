@@ -19,7 +19,7 @@ public interface EventService {
     //deletion of event ------>
     String deleteEvent(String id);
 
-    Event getEventById(String id);
+    EventResponse getEventById(String id);
 
     PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
 
