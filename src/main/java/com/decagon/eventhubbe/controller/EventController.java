@@ -45,6 +45,17 @@ public class EventController {
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEvent(pageNo, pageSize, sortBy, sortDir));
         return ResponseEntity.ok().body(apiResponse);
     }
+    @GetMapping("/search-event")
+    public ResponseEntity<APIResponse<PageUtils>> findAllEventsByKeyword(
+            @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
+            @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = PageConstant.sortBy) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = PageConstant.sortDir) String sortDir,
+            @RequestParam("keyword") String keyword) {
+
+        APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.searchEventsByKeyword(pageNo, pageSize, sortBy, sortDir, keyword));
+        return ResponseEntity.ok().body(apiResponse);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<String>> updateEvent(

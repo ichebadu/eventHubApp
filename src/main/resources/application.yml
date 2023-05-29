@@ -7,6 +7,7 @@ spring:
       database: eventHub
       host: localhost
       port: 27017
+      auto-index-creation: on
   application:
     name: event-hub
   mail:

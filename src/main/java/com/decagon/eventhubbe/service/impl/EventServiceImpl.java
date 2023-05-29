@@ -21,9 +21,16 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.TextCriteria;
+import org.springframework.data.mongodb.core.query.TextQuery;
+import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -39,6 +46,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventTicketRepository eventTicketRepository;
     private final AppUserServiceImpl appUserService;
+    private final MongoTemplate mongoTemplate;
     private final ModelMapper modelMapper;
 
     @Override
@@ -101,7 +109,52 @@ public class EventServiceImpl implements EventService {
         eventToDelete.setDeleted(true);
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
+    @Override
+    public PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword) {
+        TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matchingAny(keyword);
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize,sort);
 
+        TextQuery textQuery = TextQuery.queryText(textCriteria)
+                .sortByScore();
+        Pair<List<Event>, Long> result = executeQuery(textQuery, pageable);
+
+        Page<Event> eventPage = PageableExecutionUtils.getPage(result.getFirst(), pageable, result::getSecond);
+        List<Event> events = eventPage.getContent();
+        if(events.isEmpty()){
+            throw  new EventNotFoundException(" search word is not found");
+        }
+        List<EventResponse> eventResponseList = events.stream()
+                .filter(EventUtils::eventValidation)
+                .map(event -> modelMapper.map(event, EventResponse.class))
+                .toList();
+
+        return PageUtils.builder()
+                .content(eventResponseList)
+                .pageNo(eventPage.getNumber())
+                .pageSize(eventPage.getSize())
+                .totalElements(eventPage.getTotalElements())
+                .totalPage(eventPage.getTotalPages())
+                .isLast(eventPage.isLast())
+                .build();
+
+    }
+    private Pair<List<Event>, Long> executeQuery(TextQuery query, Pageable pageable) {
+        Assert.notNull(query, "TextQuery must not be null");
+        Assert.notNull(pageable, "Pageable must not be null");
+
+        query.with(pageable);
+
+        List<Event> results = mongoTemplate.find(query, Event.class);
+        long count = calculateCount(query);
+
+        return Pair.of(results, count);
+    }
+
+    private long calculateCount(TextQuery query) {
+        return mongoTemplate.count(query, Event.class);
+    }
     @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
@@ -127,6 +180,7 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
+
 
     @Transactional
     @Override

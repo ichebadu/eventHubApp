@@ -15,7 +15,7 @@ public class EventUtils {
         LocalDate eventDate = DateUtils.getLocalDate(event.getStartDate());
         LocalTime eventEndTime = DateUtils.getLocalTime(event.getEndTime());
 
-        return (eventDate.isEqual(currentDate) || eventDate.isAfter(currentDate))
-                && (currentTime.minusHours(2).isBefore(eventEndTime));
+        return (eventDate.isEqual(currentDate) && currentTime.minusHours(2).isBefore(eventEndTime))
+                || eventDate.isAfter(currentDate);
     }
 }
