@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface PaymentService {
-    String makePayment(PaymentRequest paymentRequest, String eventId, String ticketId);
+    String makePayment(PaymentRequest paymentDTO,String id);
 }

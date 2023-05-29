@@ -77,6 +77,18 @@ public class EventHubExceptionHandler {
                 .build();
         return new ResponseEntity<>(exceptionResponse,HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<EventHubExceptionResponse> tokenNotFound(TokenNotFoundException e,
+                                                                  HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.NOT_FOUND);
+    }
     private String saveLocalDate(LocalDateTime date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm:ss a");
         return date.format(formatter);

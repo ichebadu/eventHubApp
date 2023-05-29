@@ -1,19 +1,18 @@
 package com.decagon.eventhubbe.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.mongodb.core.index.Indexed;
+import com.decagon.eventhubbe.domain.entities.EventTicket;
+import com.decagon.eventhubbe.dto.response.EventTicketResponse;
+import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.List;
+
+@Data
 public class PaymentRequest {
+    private String email;
     private String buyerEmail;
     private String buyerName;
-    private Integer qty;
+    private String eventId;
+    private List<EventTicketResponse> eventTicketList;
+
 }

@@ -33,7 +33,7 @@ public class ConfirmationToken {
     private Date getExpirationDate(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(new Date().getTime());
-        calendar.add(Calendar.MINUTE,10);
+        calendar.add(Calendar.MINUTE,1);
         return new Date(calendar.getTime().getTime());
     }
 }

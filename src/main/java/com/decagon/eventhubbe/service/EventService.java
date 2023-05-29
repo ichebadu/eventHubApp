@@ -24,4 +24,5 @@ public interface EventService {
     PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
 
     String updateEvent(String id, Event updateEvent);
+
 }
