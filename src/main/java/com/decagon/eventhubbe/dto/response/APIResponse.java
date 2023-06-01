@@ -11,28 +11,19 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonPropertyOrder(value = {"message", "time", "data"})
 public class APIResponse<T> {
     private String message;
     private String time;
     private T data;
-
-    public APIResponse() {
-        this.message = "Processed Successfully";
-        this.time = DateUtils.saveDate(LocalDateTime.now());
-    }
-
     public APIResponse(T data) {
         this.message = "Processed Successfully";
         this.time = DateUtils.saveDate(LocalDateTime.now());
         this.data = data;
     }
 
-    public APIResponse(String message, String time, T data) {
-        this.message = message;
-        this.time = time;
-        this.data = data;
-    }
 
     // Rest of the class...
 }

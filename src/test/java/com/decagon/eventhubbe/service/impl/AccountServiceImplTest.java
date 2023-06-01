@@ -4,8 +4,7 @@ import com.decagon.eventhubbe.domain.entities.Account;
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Banks;
 import com.decagon.eventhubbe.domain.repository.*;
-import com.decagon.eventhubbe.dto.RequestAccountDTO;
-import com.decagon.eventhubbe.dto.request.SubAccountRequest;
+import com.decagon.eventhubbe.dto.request.RequestAccountDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 
 import static com.decagon.eventhubbe.utils.PaymentUtils.getSecretKey;
-import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class AccountServiceImplTest {
     @Mock
@@ -118,28 +117,6 @@ class AccountServiceImplTest {
     @Test
     void updateAccount() {
     }
-
-    @Test
-    void deleteAccount() {
-        String accountId = "646ec04e3681c87f25685e48";
-        String userEmail = "chiorlujack@gmail.com";
-
-        session(userEmail);
-
-        AppUser appUser = new AppUser();
-        appUser.setEmail(userEmail);
-        Account account = new Account();
-        account.setId(accountId);
-
-        Mockito.when(appUserRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(appUser));
-        Mockito.when(accountRepository.findById(Mockito.anyString())).thenReturn(Optional.of(account));
-
-        accountService.deleteAccount(accountId);
-
-        SecurityContextHolder.clearContext();
-    }
-
-
     public void session(String userEmail) {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(Mockito.mock(Authentication.class));

@@ -22,26 +22,31 @@ public class AuthController {
     private final ConfirmationTokenService confirmationTokenService;
 
     @PostMapping("/register")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<RegistrationResponse>> register (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
         APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.register(registrationRequest, request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
     @PostMapping("/authenticate")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<LoginResponse>> authenticate(@RequestBody LoginRequest loginRequest){
         APIResponse<LoginResponse> apiResponse = new APIResponse<>(appUserService.authenticate(loginRequest));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @GetMapping("/verify-email")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> verifyUser(@RequestParam("token") String token, HttpServletRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(confirmationTokenService.verifyUser(token,request));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @GetMapping("/new-verification-link")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> resendAuthentication(@RequestParam ("email") String email, HttpServletRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(confirmationTokenService.sendNewVerificationLink(email,request));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
     @GetMapping("/verify-password-token")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> forgotPassword(@RequestParam ("token") String token){
         APIResponse<String> apiResponse = new APIResponse<>(confirmationTokenService.forgotPassword(token));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);

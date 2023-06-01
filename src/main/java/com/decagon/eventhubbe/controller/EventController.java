@@ -1,7 +1,7 @@
 package com.decagon.eventhubbe.controller;
 
-import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.dto.request.EventRequest;
+import com.decagon.eventhubbe.dto.request.EventUpdateRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.service.EventService;
@@ -23,11 +23,13 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping("/create")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
         APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     @PostMapping(value = "/create/{eventId}/event-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> addEventBanner(@PathVariable String eventId,
             @RequestParam("file") MultipartFile file){
         APIResponse<EventResponse> response = new APIResponse<>(eventService.addEventBanner(eventId,file));
@@ -35,6 +37,7 @@ public class EventController {
     }
 
     @GetMapping("/view-event/")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<PageUtils>> findAllEvents(
             @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
             @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
@@ -45,6 +48,7 @@ public class EventController {
         return ResponseEntity.ok().body(apiResponse);
     }
     @GetMapping("/search-event")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<PageUtils>> findAllEventsByKeyword(
             @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
             @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
@@ -52,33 +56,37 @@ public class EventController {
             @RequestParam(value = "sortDir", defaultValue = PageConstant.sortDir) String sortDir,
             @RequestParam("keyword") String keyword) {
 
-        APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.searchEventsByKeyword(pageNo, pageSize, sortBy, sortDir, keyword));
+        APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.searchEventsByKeyword(
+                pageNo, pageSize, sortBy, sortDir, keyword));
         return ResponseEntity.ok().body(apiResponse);
     }
 
-    @GetMapping("/view-event/{id}")
+    @GetMapping("/view-event/{eventId}")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> getEventById(
-            @PathVariable String id){
-        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.getEventById(id));
+            @PathVariable String eventId){
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.getEventById(eventId));
         return ResponseEntity.ok(apiResponse);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<APIResponse<String>> updateEvent(
-            @PathVariable String id,
-            @RequestBody Event updateEvent
+    @PutMapping("/{eventId}")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<EventResponse>> updateEvent(
+            @PathVariable String eventId,
+            @RequestBody EventUpdateRequest updateEvent
     ){
-        APIResponse<String> apiResponse = new APIResponse<>(eventService.updateEvent(id, updateEvent));
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.updateEvent(eventId, updateEvent));
         return new ResponseEntity<>(
                 apiResponse, HttpStatus.OK
         );
     }
 
     // Implementing the deletion of Event ----->
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{eventId}")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> deleteEvent(
-            @PathVariable String id) {
-        APIResponse<String> apiResponse = new APIResponse<>(eventService.deleteEvent(id));
+            @PathVariable String eventId) {
+        APIResponse<String> apiResponse = new APIResponse<>(eventService.deleteEvent(eventId));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 

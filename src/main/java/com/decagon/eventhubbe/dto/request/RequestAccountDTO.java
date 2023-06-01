@@ -1,4 +1,4 @@
-package com.decagon.eventhubbe.dto;
+package com.decagon.eventhubbe.dto.request;
 
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import lombok.AllArgsConstructor;

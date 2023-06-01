@@ -1,9 +1,7 @@
 package com.decagon.eventhubbe.events.register;
 
 import com.decagon.eventhubbe.domain.entities.AppUser;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 

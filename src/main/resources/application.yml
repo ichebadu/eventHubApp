@@ -1,5 +1,3 @@
-payment:
-  key: sk_test_652cb496246c20a1a51456bdf96c12485b37cf7c
 spring:
   data:
     mongodb:

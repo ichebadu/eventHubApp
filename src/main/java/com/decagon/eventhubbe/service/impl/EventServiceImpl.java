@@ -6,54 +6,43 @@ import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.domain.entities.EventTicket;
 import com.decagon.eventhubbe.domain.entities.geoLocation.GeoResponse;
-import com.decagon.eventhubbe.domain.entities.geoLocation.Result;
 import com.decagon.eventhubbe.domain.repository.AccountRepository;
 import com.decagon.eventhubbe.domain.repository.EventRepository;
 import com.decagon.eventhubbe.domain.repository.EventTicketRepository;
 import com.decagon.eventhubbe.dto.request.EventRequest;
 import com.decagon.eventhubbe.dto.request.EventTicketRequest;
+import com.decagon.eventhubbe.dto.request.EventUpdateRequest;
 import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.exception.EventNotFoundException;
 import com.decagon.eventhubbe.exception.UnauthorizedException;
 import com.decagon.eventhubbe.service.EventService;
-import com.decagon.eventhubbe.utils.DateUtils;
-import com.decagon.eventhubbe.utils.EventUtils;
-import com.decagon.eventhubbe.utils.PageUtils;
-import com.decagon.eventhubbe.utils.UserUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.decagon.eventhubbe.utils.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
+import org.springframework.data.geo.Point;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.decagon.eventhubbe.utils.LocationUtils.*;
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
-
-    private static final Object API_KEY = "AIzaSyA22GBhIK3LwSHcYDlB8UYJ4x1IoGeuqvM";
 
     private final EventRepository eventRepository;
     private final EventTicketRepository eventTicketRepository;
@@ -68,6 +57,7 @@ public class EventServiceImpl implements EventService {
 
         GeoResponse geoDetails = getGeoDetails(request);
         String actualLocation = extractActualLocation(geoDetails);
+        Point pointLocation = convertToCoordinates(geoDetails);
 
         if(!accountRepository.existsByAppUser(user)){
             throw new RuntimeException("USER NEED TO UPDATE HIS PROFILE");
@@ -79,6 +69,7 @@ public class EventServiceImpl implements EventService {
                 .appUser(user)
                 .category(EventCategory.fromDisplayName(request.getCategory()))
                 .location(actualLocation)
+                .pointLocation(pointLocation)
                 .organizer(request.getOrganizer())
                 .isDeleted(false)
                 .startDate(request.getStartDate())
@@ -114,7 +105,6 @@ public class EventServiceImpl implements EventService {
     }
 
     // Implementing the deletion of Event ----->
-    @Transactional
     @Override
     public String deleteEvent(String id) {
 
@@ -127,6 +117,7 @@ public class EventServiceImpl implements EventService {
             throw new UnauthorizedException("Unauthorized! Event created by another user");
         }
         eventToDelete.setDeleted(true);
+        eventRepository.save(eventToDelete);
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
     @Override
@@ -209,54 +200,29 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
-
-    @Transactional
     @Override
-    public String updateEvent(String id, Event updateEvent) {
-        Event eventToUpdate = eventRepository.findById(id)
-                .orElseThrow(() -> new EventNotFoundException(id));
-
+    public EventResponse updateEvent(String eventId, EventUpdateRequest updateEvent) {
+        AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
+        GeoResponse geoDetails = getGeoDetails(updateEvent);
+        String actualLocation = extractActualLocation(geoDetails);
+        Point pointLocation = convertToCoordinates(geoDetails);
+        Event eventToUpdate = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException(eventId));
+        if(!eventToUpdate.getAppUser().equals(appUser)){
+            throw new UnauthorizedException("Event Created By Another User");
+        }
         eventToUpdate.setTitle(updateEvent.getTitle());
         eventToUpdate.setCaption(updateEvent.getCaption());
         eventToUpdate.setDescription(updateEvent.getDescription());
         eventToUpdate.setOrganizer(updateEvent.getOrganizer());
-        eventToUpdate.setCategory(updateEvent.getCategory());
-        eventToUpdate.setLocation(updateEvent.getLocation());
+        eventToUpdate.setCategory(EventCategory.valueOf(updateEvent.getCategory()));
+        eventToUpdate.setLocation(actualLocation);
+        eventToUpdate.setPointLocation(pointLocation);
         eventToUpdate.setStartDate(updateEvent.getStartDate());
         eventToUpdate.setEndDate(updateEvent.getEndDate());
         eventToUpdate.setStartTime(updateEvent.getStartTime());
         eventToUpdate.setEndTime(updateEvent.getEndTime());
-        eventToUpdate.setBannerUrl(updateEvent.getBannerUrl());
-        eventToUpdate.setAppUser(updateEvent.getAppUser());
-        eventToUpdate.setEventTickets(updateEvent.getEventTickets());
-
-        eventRepository.save(eventToUpdate);
-
-        return "Event with ID: " + id + " updated successfully";
-    }
-
-
-    private GeoResponse getGeoDetails(@RequestParam EventRequest location) {
-        UriComponents uri = UriComponentsBuilder.newInstance()
-                .scheme("https")
-                .host("maps.googleapis.com")
-                .path("/maps/api/geocode/json")
-                .queryParam("key", API_KEY)
-                .queryParam("address", location.getLocation())
-                .build();
-        ResponseEntity<GeoResponse> response = new RestTemplate().getForEntity(uri.toUriString(), GeoResponse.class);
-
-        return response.getBody();
-    }
-
-    private String extractActualLocation(GeoResponse geoDetails) {
-        if (geoDetails != null && geoDetails.getResult() != null && geoDetails.getResult().length > 0) {
-            Result firstResult = geoDetails.getResult()[0];
-            if (firstResult.getAddress() != null) {
-                return firstResult.getAddress();
-            }
-        }
-        return "Unknown Location";
+        return modelMapper.map(eventRepository.save(eventToUpdate), EventResponse.class);
     }
 }
 
