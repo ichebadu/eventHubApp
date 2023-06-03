@@ -37,7 +37,6 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 public class AppUserServiceImpl implements AppUserService {
-
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenRepository jwtTokenRepository;
