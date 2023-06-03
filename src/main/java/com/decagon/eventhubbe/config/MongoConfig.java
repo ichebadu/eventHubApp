@@ -9,27 +9,11 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 @Configuration
 public class MongoConfig {
 
-    @Value("${spring.data.mongodb.host}")
-    private String host;
-
-    @Value("${spring.data.mongodb.port}")
-    private int port;
-
-    @Value("${spring.data.mongodb.database}")
-    private String database;
-
-    @Value("${spring.data.mongodb.username}")
-    private String username;
-
-    @Value("${spring.data.mongodb.password}")
-    private String password;
-
-    @Value("${spring.data.mongodb.authentication-database}")
-    private String authenticationDatabase;
+    @Value("${spring.data.mongodb.uri}")
+    private String uri;
     @Bean
     public MongoTemplate mongoTemplate() {
-        String connectionString = "mongodb://" + username + ":" + password + "@" + host + ":" + port + "/" + database + "?authSource=" + authenticationDatabase;
-        return new MongoTemplate(new SimpleMongoClientDatabaseFactory(connectionString));
+        return new MongoTemplate(new SimpleMongoClientDatabaseFactory(uri));
     }
 
 }
