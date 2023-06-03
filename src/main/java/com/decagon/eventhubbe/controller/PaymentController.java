@@ -2,7 +2,6 @@ package com.decagon.eventhubbe.controller;
 
 import com.decagon.eventhubbe.dto.request.PaymentRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
-import com.decagon.eventhubbe.dto.response.PaymentResponse;
 import com.decagon.eventhubbe.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

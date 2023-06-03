@@ -3,7 +3,6 @@ package com.decagon.eventhubbe.config;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class CloudinaryConfig {
         Cloudinary cloudinary = new Cloudinary(config);
 
         try {
-            cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(id, "image_id"+id));
+            cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("public_id", "image_id"+id));
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
         }

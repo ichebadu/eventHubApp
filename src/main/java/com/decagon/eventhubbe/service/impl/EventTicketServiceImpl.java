@@ -26,6 +26,7 @@ public class EventTicketServiceImpl implements EventTicketService {
     private final EventRepository eventRepository;
     private final PaymentRepository paymentRepository;
 
+
     @Override
     public List<TicketsSalesResponse> trackTicketSales(String eventId){
         String email = UserUtils.getUserEmailFromContext();

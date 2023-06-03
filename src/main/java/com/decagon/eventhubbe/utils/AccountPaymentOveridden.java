@@ -1,4 +1,4 @@
-package com.decagon.eventhubbe.config;
+package com.decagon.eventhubbe.utils;
 
 
 import lombok.Data;

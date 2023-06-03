@@ -1,4 +1,4 @@
-package com.decagon.eventhubbe.dto;
+package com.decagon.eventhubbe.dto.response;
 
 import lombok.Data;
 
