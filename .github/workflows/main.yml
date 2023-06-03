@@ -35,6 +35,11 @@ jobs:
           distribution: 'corretto'
           java-version: ${{ env.JAVA_VERSION }}
 
+      - name: Install MongoDB Client Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mongodb-clients
+
       - name: Get Public IP
         id: get-ip
         run: |
