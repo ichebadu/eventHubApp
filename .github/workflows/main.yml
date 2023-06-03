@@ -35,10 +35,12 @@ jobs:
           distribution: 'corretto'
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Install MongoDB Client Tools
+      - name: Install MongoDB Tools
         run: |
+          curl -fsSL https://www.mongodb.org/static/pgp/server-5.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/mongodb-archive-keyring.gpg] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
           sudo apt-get update
-          sudo apt-get install -y mongodb-clients
+          sudo apt-get install -y mongodb-database-tools 
 
       - name: Get Public IP
         id: get-ip
