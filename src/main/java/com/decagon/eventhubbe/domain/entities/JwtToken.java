@@ -19,10 +19,8 @@ public class JwtToken {
     private String accessToken;
     @Indexed(unique = true)
     private String refreshToken;
+    private boolean isExpired;
+    private boolean isRevoked;
     @DBRef
     private AppUser appUser;
-
-    private Date generatedAt;
-    private Date expiresAt;
-    private Date refreshedAt;
 }

@@ -4,14 +4,18 @@ import com.decagon.eventhubbe.dto.request.LoginRequest;
 import com.decagon.eventhubbe.dto.request.RegistrationRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
 import com.decagon.eventhubbe.dto.response.LoginResponse;
+import com.decagon.eventhubbe.dto.response.RefreshTokenResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
 import com.decagon.eventhubbe.service.AppUserService;
 import com.decagon.eventhubbe.service.ConfirmationTokenService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -31,6 +35,12 @@ public class AuthController {
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<LoginResponse>> authenticate(@RequestBody LoginRequest loginRequest){
         APIResponse<LoginResponse> apiResponse = new APIResponse<>(appUserService.authenticate(loginRequest));
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+    }
+    @PostMapping("/refresh-token")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<RefreshTokenResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        APIResponse<RefreshTokenResponse> apiResponse = new APIResponse<>(appUserService.refreshToken(request,response));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @GetMapping("/verify-email")

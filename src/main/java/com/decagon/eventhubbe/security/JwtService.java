@@ -2,34 +2,31 @@ package com.decagon.eventhubbe.security;
 
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.JwtToken;
-import com.decagon.eventhubbe.domain.repository.AppUserRepository;
 import com.decagon.eventhubbe.domain.repository.JwtTokenRepository;
-import com.decagon.eventhubbe.exception.AppUserNotFoundException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.xml.bind.DatatypeConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
 public class JwtService {
     private final JwtTokenRepository jwtTokenRepository;
-    private final AppUserRepository appUserRepository;
-    @Value("${jwt.expiration}")
-    private long expiration;
-
+    @Value("${jwt.expiration.access-token}")
+    private long access_expiration;
+    @Value("${jwt.expiration.refresh-token}")
+    private long refresh_expiration;
     private String generateSecret(){
         return DatatypeConverter.printBase64Binary(new byte[512/8]);
     }
@@ -53,7 +50,7 @@ public class JwtService {
         return claims.getSubject();
     }
 
-    public boolean isTokenExpired(String token){
+    private boolean isTokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }
 
@@ -69,7 +66,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + access_expiration))
                 .signWith(generateKey(), SignatureAlgorithm.HS512)
                 .compact();
 
@@ -79,29 +76,18 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + refresh_expiration))
                 .signWith(generateKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
-    public String getRefreshToken(String accessToken){
-        JwtToken jwtToken = jwtTokenRepository.findByAccessToken(accessToken);
-        return jwtToken.getRefreshToken();
+    public void revokeAllUserTokens(AppUser appUser){
+        List<JwtToken> jwtTokens = jwtTokenRepository.findAllByAppUser(appUser);
+        jwtTokens.forEach(jwtToken -> {
+            jwtToken.setExpired(true);
+            jwtToken.setRevoked(true);
+        });
+        jwtTokenRepository.saveAll(jwtTokens);
     }
-    @Transactional
-    public JwtToken generateNewTokens(String refreshToken){
-        String email = extractUsername(refreshToken);
-        AppUser appUser = appUserRepository.findByEmail(email)
-                .orElseThrow(()-> new AppUserNotFoundException(email));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                appUser.getEmail(),appUser.getPassword());
-        JwtToken jwtToken = jwtTokenRepository.findByRefreshToken(refreshToken);
-        jwtToken.setAccessToken(generateToken(authentication));
-        jwtToken.setRefreshToken(generateRefreshToken(authentication));
-        jwtToken.setExpiresAt(new Date(System.currentTimeMillis() + expiration));
-        jwtToken.setRefreshedAt(new Date(System.currentTimeMillis()));
-        return jwtToken;
-    }
-
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String username = extractUsername(token);

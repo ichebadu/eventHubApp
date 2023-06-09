@@ -17,8 +17,9 @@ spring:
             enable: true
 
 jwt:
-  expiration: 90000000
-
+  expiration:
+    access-token: 86400000
+    refresh-token: 259200000
 v1: 1
 server:
   port: 8999

@@ -1,6 +1,6 @@
 package com.decagon.eventhubbe.security;
 
-import com.decagon.eventhubbe.domain.entities.JwtToken;
+import com.decagon.eventhubbe.domain.repository.JwtTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +10,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,6 +22,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailService userService;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken = null;
-        String refreshToken = null;
         String username = null;
         String authHeader = request.getHeader("Authorization");
 
@@ -41,13 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if(username!=null&& SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails =  userService.loadUserByUsername(username);
-            if(jwtService.isTokenExpired(accessToken)){
-                refreshToken = jwtService.getRefreshToken(accessToken);
-                JwtToken jwtToken = jwtService.generateNewTokens(refreshToken);
-                 accessToken = jwtToken.getAccessToken();
-                response.setHeader("Authorization","Bearer "+accessToken);
-            }
-            if (jwtService.isTokenValid(accessToken, userDetails)){
+            var isTokenValid = jwtTokenRepository.findJwtTokenByAccessToken(accessToken)
+                    .map(t-> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
+            if (jwtService.isTokenValid(accessToken, userDetails) && isTokenValid){
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                         = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

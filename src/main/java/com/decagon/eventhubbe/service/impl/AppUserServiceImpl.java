@@ -7,6 +7,7 @@ import com.decagon.eventhubbe.domain.repository.JwtTokenRepository;
 import com.decagon.eventhubbe.dto.request.LoginRequest;
 import com.decagon.eventhubbe.dto.request.RegistrationRequest;
 import com.decagon.eventhubbe.dto.response.LoginResponse;
+import com.decagon.eventhubbe.dto.response.RefreshTokenResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
 import com.decagon.eventhubbe.events.register.RegistrationEvent;
 import com.decagon.eventhubbe.exception.AppUserAlreadyExistException;
@@ -17,17 +18,20 @@ import com.decagon.eventhubbe.security.JwtService;
 import com.decagon.eventhubbe.service.AppUserService;
 import com.decagon.eventhubbe.utils.EmailUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 @Service
@@ -40,8 +44,6 @@ public class AppUserServiceImpl implements AppUserService {
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
     private final ApplicationEventPublisher publisher;
-    @Value("${jwt.expiration}")
-    private long expiration;
 
     @Override
     public RegistrationResponse register(RegistrationRequest registrationRequest,
@@ -75,9 +77,10 @@ public class AppUserServiceImpl implements AppUserService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .appUser(appUser)
-                .generatedAt(new Date(System.currentTimeMillis()))
-                .expiresAt(new Date(System.currentTimeMillis()+expiration))
+                .isExpired(false)
+                .isRevoked(false)
                 .build();
+        jwtService.revokeAllUserTokens(appUser);
         JwtToken savedToken = jwtTokenRepository.save(jwtToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return LoginResponse.builder()
@@ -88,6 +91,38 @@ public class AppUserServiceImpl implements AppUserService {
                 .build();
     }
 
+    @Override
+    public RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String refreshToken;
+        String username;
+        String authHeader = request.getHeader("Authorization");
+
+        if(authHeader!=null&&authHeader.startsWith("Bearer ")) {
+            refreshToken = authHeader.substring(7);
+            username = jwtService.extractUsername(refreshToken);
+            JwtToken jwtToken = jwtTokenRepository.findByRefreshToken(refreshToken);
+            if(username!=null) {
+                var userDetails = appUserRepository.findByEmail(username)
+                        .orElseThrow();
+                UserDetails user = new User(userDetails.getEmail(), userDetails.getPassword(), new ArrayList<>());
+                var isTokenValid = jwtTokenRepository.findJwtTokenByRefreshToken(refreshToken)
+                        .map(t -> !t.isExpired() && !t.isRevoked())
+                        .orElse(false);
+                if (jwtService.isTokenValid(refreshToken, user) && isTokenValid) {
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails.getEmail(), user.getPassword());
+                    var accessToken = jwtService.generateToken(authentication);
+                    jwtToken.setAccessToken(accessToken);
+                    jwtTokenRepository.save(jwtToken);
+                    return RefreshTokenResponse.builder()
+                            .accessToken(accessToken)
+                            .refreshToken(refreshToken)
+                            .build();
+                }
+            }
+        }
+        return null;
+    }
 
     private AppUser registrationRequestToAppUser (RegistrationRequest registrationRequest) {
         return modelMapper.map(registrationRequest, AppUser.class);
