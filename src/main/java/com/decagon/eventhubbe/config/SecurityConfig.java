@@ -2,7 +2,6 @@ package com.decagon.eventhubbe.config;
 
 import com.decagon.eventhubbe.security.JwtAuthenticationFilter;
 import com.decagon.eventhubbe.security.LogoutService;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,7 +52,6 @@ public class SecurityConfig {
                 .logoutUrl("/api/v1/auth/logout")
                 .addLogoutHandler(logoutService)
                 .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()));
-
        return httpSecurity.build();
     }
 }

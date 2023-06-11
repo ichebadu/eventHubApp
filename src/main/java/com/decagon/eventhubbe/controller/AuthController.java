@@ -61,4 +61,7 @@ public class AuthController {
         APIResponse<String> apiResponse = new APIResponse<>(confirmationTokenService.forgotPassword(token));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
+    @GetMapping("/logout")
+    public void logout() {
+    }
 }

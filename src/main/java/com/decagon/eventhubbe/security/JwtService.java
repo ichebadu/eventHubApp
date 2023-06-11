@@ -82,11 +82,14 @@ public class JwtService {
     }
     public void revokeAllUserTokens(AppUser appUser){
         List<JwtToken> jwtTokens = jwtTokenRepository.findAllByAppUser(appUser);
-        jwtTokens.forEach(jwtToken -> {
-            jwtToken.setExpired(true);
-            jwtToken.setRevoked(true);
-        });
-        jwtTokenRepository.saveAll(jwtTokens);
+        if (!jwtTokens.isEmpty()) {
+            jwtTokens.forEach(jwtToken -> {
+                jwtToken.setExpired(true);
+                jwtToken.setRevoked(true);
+            });
+            jwtTokenRepository.saveAll(jwtTokens);
+        }
+
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

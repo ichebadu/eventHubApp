@@ -19,6 +19,9 @@ import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -105,6 +108,7 @@ public class EventServiceImpl implements EventService {
     }
 
     // Implementing the deletion of Event ----->
+    @CacheEvict(cacheNames = "events",allEntries = true)
     @Override
     public String deleteEvent(String id) {
 
@@ -120,6 +124,7 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(eventToDelete);
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#keyword}")
     @Override
     public PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword) {
         TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matchingAny(keyword);
@@ -167,6 +172,7 @@ public class EventServiceImpl implements EventService {
         return mongoTemplate.count(query, Event.class);
     }
 
+    @Cacheable(cacheNames = "events", key = "#id")
     @Override
     public EventResponse getEventById(String id) {
         Event event = eventRepository.findById(id)
@@ -175,6 +181,7 @@ public class EventServiceImpl implements EventService {
 
     }
 
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
     @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
@@ -200,17 +207,19 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
+    @CachePut(cacheNames = "events", key = "#id")
     @Override
-    public EventResponse updateEvent(String eventId, EventUpdateRequest updateEvent) {
+    public EventResponse updateEvent(String id, EventUpdateRequest updateEvent) {
         AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
         GeoResponse geoDetails = getGeoDetails(updateEvent);
         String actualLocation = extractActualLocation(geoDetails);
         Point pointLocation = convertToCoordinates(geoDetails);
-        Event eventToUpdate = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventNotFoundException(eventId));
+        Event eventToUpdate = eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException(id));
         if(!eventToUpdate.getAppUser().equals(appUser)){
             throw new UnauthorizedException("Event Created By Another User");
         }
+        evictEventCache();
         eventToUpdate.setTitle(updateEvent.getTitle());
         eventToUpdate.setCaption(updateEvent.getCaption());
         eventToUpdate.setDescription(updateEvent.getDescription());
@@ -223,6 +232,10 @@ public class EventServiceImpl implements EventService {
         eventToUpdate.setStartTime(updateEvent.getStartTime());
         eventToUpdate.setEndTime(updateEvent.getEndTime());
         return modelMapper.map(eventRepository.save(eventToUpdate), EventResponse.class);
+    }
+
+    @CacheEvict(cacheNames = "events",allEntries = true)
+    public void evictEventCache(){
     }
 }
 
