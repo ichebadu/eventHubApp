@@ -26,7 +26,7 @@ public class RegistrationEventListener implements ApplicationListener<Registrati
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(token, appUser);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-        String url = event.getApplicationUrl()+"/api/v1/auth/verify-email?token="+token;
+        String url = event.getApplicationUrl()+"/token/"+token;
         try{
             sendConfirmationToken(url,appUser);
         }catch(UnsupportedEncodingException | MessagingException e){

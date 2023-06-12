@@ -52,7 +52,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setEnabled(false);
         AppUser savedUser = appUserRepository.insert(appUser);
-        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
+        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
         return RegistrationResponse.builder()
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())

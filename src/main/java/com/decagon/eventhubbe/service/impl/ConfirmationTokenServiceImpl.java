@@ -59,6 +59,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
             return "User already verified, Proceed to login";
         }
 
+
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
         return "please check your mail for verification link";
     }
