@@ -99,7 +99,7 @@ public class EventHubExceptionHandler {
 
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity<APIResponse<EventHubExceptionResponse>> tokenNotFound(TokenNotFoundException e,
-                                                                  HttpServletRequest request){
+                                                                                HttpServletRequest request){
         EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
                 .time(saveLocalDate(LocalDateTime.now()))
                 .message(e.getMessage())
@@ -108,6 +108,19 @@ public class EventHubExceptionHandler {
                 .build();
         APIResponse<EventHubExceptionResponse> apiResponse =new APIResponse<>(exceptionResponse);
         return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<APIResponse<EventHubExceptionResponse>> tokenExpired(TokenExpiredException e,
+                                                                                HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .path(request.getRequestURI())
+                .build();
+        APIResponse<EventHubExceptionResponse> apiResponse =new APIResponse<>(exceptionResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
     }
     private String saveLocalDate(LocalDateTime date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm:ss a");
