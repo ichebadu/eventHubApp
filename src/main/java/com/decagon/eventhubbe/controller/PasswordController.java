@@ -16,12 +16,14 @@ public class PasswordController {
     private final PasswordService passwordService;
 
     @GetMapping("/forgot-password")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> forgotPassword(@RequestParam("email") String email,
                                                               HttpServletRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(passwordService.forgotPassword(email,request));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @PostMapping("/reset")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> resetPassword(@RequestBody ResetPasswordRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(passwordService.resetPassword(request));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);

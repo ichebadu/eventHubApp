@@ -5,6 +5,7 @@ import com.decagon.eventhubbe.domain.entities.ConfirmationToken;
 import com.decagon.eventhubbe.domain.repository.AppUserRepository;
 import com.decagon.eventhubbe.domain.repository.ConfirmationTokenRepository;
 import com.decagon.eventhubbe.events.register.RegistrationEvent;
+import com.decagon.eventhubbe.exception.TokenExpiredException;
 import com.decagon.eventhubbe.exception.TokenNotFoundException;
 import com.decagon.eventhubbe.service.ConfirmationTokenService;
 import com.decagon.eventhubbe.utils.EmailUtils;
@@ -59,7 +60,8 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
             return "User already verified, Proceed to login";
         }
 
-        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
+
+        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
         return "please check your mail for verification link";
     }
 
@@ -67,6 +69,11 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     public String forgotPassword(String token) {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
                 .orElseThrow(()->new TokenNotFoundException("Invalid Credential"));
+        if(confirmationToken.getExpiresAt().before(new Date())){
+           throw new TokenExpiredException("Token Expired");
+
+        }
+
         return confirmationToken.getAppUser().getEmail();
     }
 }

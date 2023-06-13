@@ -31,7 +31,7 @@ public class PasswordServiceImpl implements PasswordService {
         if(confirmationToken!= null){
             tokenRepository.delete(confirmationToken);
         }
-        publisher.publishEvent(new ForgotPasswordEvent(appUser, EmailUtils.applicationUrl(request)));
+        publisher.publishEvent(new ForgotPasswordEvent(appUser, EmailUtils.frontEndAppUrl(request)));
         return "Please Check Your Mail For Password Reset Link";
     }
     @Override

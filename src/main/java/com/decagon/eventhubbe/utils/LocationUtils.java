@@ -14,7 +14,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class LocationUtils {
-    private static final Object API_KEY = "AIzaSyA22GBhIK3LwSHcYDlB8UYJ4x1IoGeuqvM";
+    private static final String API_KEY = "AIzaSyA22GBhIK3LwSHcYDlB8UYJ4x1IoGeuqvM";
     public static GeoResponse getGeoDetails(@RequestParam EventRequest location) {
         UriComponents uri = UriComponentsBuilder.newInstance()
                 .scheme("https")

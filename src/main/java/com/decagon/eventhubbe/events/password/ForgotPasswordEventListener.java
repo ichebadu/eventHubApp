@@ -22,10 +22,10 @@ public class ForgotPasswordEventListener implements ApplicationListener<ForgotPa
     @Override
     public void onApplicationEvent(ForgotPasswordEvent event) {
         AppUser appUser = event.getAppUser();
-        String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(token, appUser);
+        String tokens = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(tokens, appUser);
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-        String url = event.getApplicationUrl()+"/api/v1/auth/verify-password-token?token="+token;
+        String url = event.getApplicationUrl() + "/tokens?token=" + tokens;
         try{
             sendConfirmationToken(url,appUser);
         }catch(UnsupportedEncodingException | MessagingException e){

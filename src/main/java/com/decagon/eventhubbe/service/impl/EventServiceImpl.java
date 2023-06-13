@@ -46,7 +46,6 @@ import static com.decagon.eventhubbe.utils.LocationUtils.*;
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
 
-
     private final EventRepository eventRepository;
     private final EventTicketRepository eventTicketRepository;
     private final AppUserServiceImpl appUserService;
