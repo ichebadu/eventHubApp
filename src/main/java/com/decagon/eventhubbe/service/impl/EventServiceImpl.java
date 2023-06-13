@@ -27,8 +27,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.TextCriteria;
-import org.springframework.data.mongodb.core.query.TextQuery;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -123,17 +123,23 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(eventToDelete);
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#keyword}")
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#keyword,#location}")
     @Override
-    public PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword) {
-        TextCriteria textCriteria = TextCriteria.forDefaultLanguage().matchingAny(keyword);
+    public PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword, String location) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize,sort);
 
-        TextQuery textQuery = TextQuery.queryText(textCriteria)
-                .sortByScore();
-        Pair<List<Event>, Long> result = executeQuery(textQuery, pageable);
+        Criteria locationCriteria = Criteria.where("location").regex("(?i).*" + location + ".*");
+        Criteria textSearchCriteria = new Criteria().orOperator(
+                Criteria.where("title").regex("(?i).*" + keyword + ".*"),
+                Criteria.where("description").regex("(?i).*" + keyword + ".*"),
+                Criteria.where("caption").regex("(?i).*" + keyword + ".*")
+        );
+        Criteria combinedCriteria = new Criteria().andOperator(locationCriteria, textSearchCriteria);
+        Query query = new Query().addCriteria(combinedCriteria).with(sort);
+
+        Pair<List<Event>, Long> result = executeQuery(query, pageable);
 
         Page<Event> eventPage = PageableExecutionUtils.getPage(result.getFirst(), pageable, result::getSecond);
         List<Event> events = eventPage.getContent();
@@ -155,7 +161,7 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
-    private Pair<List<Event>, Long> executeQuery(TextQuery query, Pageable pageable) {
+    private Pair<List<Event>, Long> executeQuery(Query query, Pageable pageable) {
         Assert.notNull(query, "TextQuery must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
 
@@ -167,7 +173,7 @@ public class EventServiceImpl implements EventService {
         return Pair.of(results, count);
     }
 
-    private long calculateCount(TextQuery query) {
+    private long calculateCount(Query query) {
         return mongoTemplate.count(query, Event.class);
     }
 
