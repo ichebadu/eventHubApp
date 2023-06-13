@@ -5,11 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
-public class EventTicketResponse {
+public class EventTicketResponse implements Serializable {
     private String id;
     private String ticketClass;
     private String description;

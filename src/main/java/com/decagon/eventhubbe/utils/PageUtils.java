@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PageUtils {
+public class PageUtils implements Serializable {
     private List<?> content;
     private Integer pageNo;
     private Integer pageSize;

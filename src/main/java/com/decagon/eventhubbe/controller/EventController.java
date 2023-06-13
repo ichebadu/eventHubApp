@@ -54,10 +54,11 @@ public class EventController {
             @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
             @RequestParam(value = "sortBy", defaultValue = PageConstant.sortBy) String sortBy,
             @RequestParam(value = "sortDir", defaultValue = PageConstant.sortDir) String sortDir,
+            @RequestParam(value = "location", defaultValue = PageConstant.location) String location,
             @RequestParam("keyword") String keyword) {
 
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.searchEventsByKeyword(
-                pageNo, pageSize, sortBy, sortDir, keyword));
+                pageNo, pageSize, sortBy, sortDir, keyword, location));
         return ResponseEntity.ok().body(apiResponse);
     }
 

@@ -17,7 +17,7 @@ public interface EventService {
     //deletion of event ------>
     String deleteEvent(String id);
 
-    PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword);
+    PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword, String location);
 
     EventResponse getEventById(String id);
 
