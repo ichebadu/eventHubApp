@@ -85,6 +85,17 @@ public class EventHubExceptionHandler {
         APIResponse<EventHubExceptionResponse> apiResponse =new APIResponse<>(exceptionResponse);
         return new ResponseEntity<>(apiResponse,HttpStatus.UNAUTHORIZED);
     }
+    @ExceptionHandler(AccountIsuesException.class)
+    public ResponseEntity<APIResponse<EventHubExceptionResponse>> accountError(AccountIsuesException e,HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .statusCode(HttpStatus.CONFLICT.value())
+                .time(saveLocalDate(LocalDateTime.now()))
+                .build();
+        APIResponse<EventHubExceptionResponse> apiResponse = new APIResponse<>(exceptionResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity<APIResponse<EventHubExceptionResponse>> tokenNotFound(TokenNotFoundException e,

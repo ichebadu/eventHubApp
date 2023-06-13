@@ -60,7 +60,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         }
 
 
-        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
+        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
         return "please check your mail for verification link";
     }
 
