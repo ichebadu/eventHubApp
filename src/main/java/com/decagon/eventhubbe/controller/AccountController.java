@@ -24,10 +24,10 @@ public class AccountController {
 
     @GetMapping("/getName")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<?> getAccountName(@RequestParam String bankName,
+    public ResponseEntity<APIResponse<?>> getAccountName(@RequestParam String bankName,
                                             @RequestParam String accountNumber) {
-        return ResponseEntity.ok().body(
-                accountService.getBankCodeAndSend(bankName, accountNumber));
+        APIResponse<?> apiResponse = new APIResponse<>(accountService.getBankCodeAndSend(bankName,accountNumber));
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @PostMapping("/create-account")
     @CrossOrigin(origins = "http://localhost:5173")

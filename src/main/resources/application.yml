@@ -34,4 +34,7 @@ jwt:
 v1: 1
 server:
   port: 8999
+cloud-api-name: dknryxg72
+cloud-api-secret: boQo3txlmXUV2VpjvmJr1dc_FKc
+cloud-api-key: 828638228684336
 
