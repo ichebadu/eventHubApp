@@ -199,7 +199,6 @@ public class EventServiceImpl implements EventService {
                 events.add(event);
             }
         });
-        System.out.println(events.get(0).getCaption());
         List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
                 .collect(Collectors.toList());
         return PageUtils.builder()

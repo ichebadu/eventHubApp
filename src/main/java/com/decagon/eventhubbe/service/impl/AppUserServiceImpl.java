@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.service.impl;
 
+import com.decagon.eventhubbe.ENUM.UserType;
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.JwtToken;
 import com.decagon.eventhubbe.domain.repository.AppUserRepository;
@@ -45,11 +46,29 @@ public class AppUserServiceImpl implements AppUserService {
     private final ApplicationEventPublisher publisher;
 
     @Override
-    public RegistrationResponse register(RegistrationRequest registrationRequest,
-                                         HttpServletRequest request) {
+    public RegistrationResponse registerAsEventGoer(RegistrationRequest registrationRequest,
+                                                    HttpServletRequest request) {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setUserType(UserType.EVENT_GOER);
+        appUser.setEnabled(false);
+        AppUser savedUser = appUserRepository.insert(appUser);
+        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
+        return RegistrationResponse.builder()
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .message("Registration Successful")
+                .build();
+    }
+
+    @Override
+    public RegistrationResponse registerAsEventCreator(RegistrationRequest registrationRequest,
+                                                       HttpServletRequest request) {
+        validateUserExistence(registrationRequest.getEmail());
+        AppUser appUser = registrationRequestToAppUser(registrationRequest);
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setUserType(UserType.EVENT_CREATOR);
         appUser.setEnabled(false);
         AppUser savedUser = appUserRepository.insert(appUser);
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
