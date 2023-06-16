@@ -58,7 +58,9 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         if (appUser.getEnabled().equals(true)){
             return "User already verified, Proceed to login";
         }
-
+        if(confirmationTokenRepository.existsByAppUser(appUser)){
+            confirmationTokenRepository.delete(confirmationTokenRepository.findByAppUser(appUser));
+        }
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
         return "please check your mail for verification link";
     }

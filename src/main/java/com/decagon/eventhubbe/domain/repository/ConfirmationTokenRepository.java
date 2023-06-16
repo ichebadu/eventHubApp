@@ -14,5 +14,8 @@ public interface ConfirmationTokenRepository extends MongoRepository<Confirmatio
     Optional<ConfirmationToken> findByToken(String token);
 
     ConfirmationToken findByAppUser(AppUser appUser);
+    Optional<ConfirmationToken> findConfirmationTokenByAppUser(AppUser appUser);
+
+    boolean existsByAppUser(AppUser appUser);
 
 }
