@@ -12,6 +12,5 @@ import java.util.List;
 @Service
 public interface EventTicketService {
 
-
     List<TicketsSalesResponse> trackTicketSales(String eventId);
 }
