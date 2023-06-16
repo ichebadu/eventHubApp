@@ -71,6 +71,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
                 .orElseThrow(()->new TokenNotFoundException("Invalid Credential"));
         if(confirmationToken.getExpiresAt().before(new Date())){
+            confirmationTokenRepository.delete(confirmationToken);
            throw new TokenExpiredException("Token Expired");
 
         }
