@@ -40,6 +40,15 @@ public class SecurityConfig {
                         "/webjars/**",
                         "/swagger-ui.html")
                 .permitAll()
+                .requestMatchers("api/v1/bank/**",
+                        "/events/create",
+                        "/events/create/{eventId}/event-banner",
+                        "/events/{eventId}",
+                        "/api/v1/ticket/view-event-sales/{eventId}")
+                .hasAuthority("EVENT_CREATOR")
+                .requestMatchers("/api/v1/ticket/save-tickets",
+                        "/api/v1/ticket/get-saved-tickets")
+                .hasAuthority("EVENT_GOER")
                 .anyRequest()
                 .authenticated()
                 .and()
