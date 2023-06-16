@@ -1,6 +1,5 @@
 package com.decagon.eventhubbe.controller;
 
-import com.decagon.eventhubbe.dto.request.AccountRequest;
 import com.decagon.eventhubbe.dto.request.AccountRequestDTO;
 import com.decagon.eventhubbe.dto.request.RequestAccountDTO;
 import com.decagon.eventhubbe.dto.response.APIResponse;
@@ -19,15 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 
 public class AccountController {
-
     private final AccountService accountService;
-
     @GetMapping("/getName")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<?> getAccountName(@RequestParam String bankName,
+    public ResponseEntity<APIResponse<?>> getAccountName(@RequestParam String bankName,
                                             @RequestParam String accountNumber) {
-        return ResponseEntity.ok().body(
-                accountService.getBankCodeAndSend(bankName, accountNumber));
+        APIResponse<?> apiResponse = new APIResponse<>(accountService.getBankCodeAndSend(bankName,accountNumber));
+        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
     @PostMapping("/create-account")
     @CrossOrigin(origins = "http://localhost:5173")
