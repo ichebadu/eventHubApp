@@ -10,15 +10,11 @@ import com.decagon.eventhubbe.exception.TokenNotFoundException;
 import com.decagon.eventhubbe.service.ConfirmationTokenService;
 import com.decagon.eventhubbe.utils.EmailUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.EmitUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

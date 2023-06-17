@@ -48,6 +48,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public RegistrationResponse registerAsEventGoer(RegistrationRequest registrationRequest,
                                                     HttpServletRequest request) {
+        System.out.println(registrationRequest.getDateOfBirth());
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
