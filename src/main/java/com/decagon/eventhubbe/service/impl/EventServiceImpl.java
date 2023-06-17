@@ -5,6 +5,7 @@ import com.decagon.eventhubbe.config.CloudinaryConfig;
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.domain.entities.EventTicket;
+import com.decagon.eventhubbe.domain.entities.geoLocation.GeoLocation;
 import com.decagon.eventhubbe.domain.entities.geoLocation.GeoResponse;
 import com.decagon.eventhubbe.domain.repository.AccountRepository;
 import com.decagon.eventhubbe.domain.repository.EventRepository;
@@ -34,7 +35,6 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.geo.Point;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
 
         GeoResponse geoDetails = getGeoDetails(request);
         String actualLocation = extractActualLocation(geoDetails);
-        Point pointLocation = convertToCoordinates(geoDetails);
+        GeoLocation coordinates = extractGeoLocation(geoDetails);
 
         if(!accountRepository.existsByAppUser(user)){
             throw new RuntimeException("USER NEED TO UPDATE HIS PROFILE");
@@ -71,7 +71,7 @@ public class EventServiceImpl implements EventService {
                 .appUser(user)
                 .category(EventCategory.fromDisplayName(request.getCategory()))
                 .location(actualLocation)
-                .pointLocation(pointLocation)
+                .coordinates(coordinates)
                 .organizer(request.getOrganizer())
                 .isDeleted(false)
                 .startDate(request.getStartDate())
@@ -138,9 +138,7 @@ public class EventServiceImpl implements EventService {
         );
         Criteria combinedCriteria = new Criteria().andOperator(locationCriteria, textSearchCriteria);
         Query query = new Query().addCriteria(combinedCriteria).with(sort);
-
         Pair<List<Event>, Long> result = executeQuery(query, pageable);
-
         Page<Event> eventPage = PageableExecutionUtils.getPage(result.getFirst(), pageable, result::getSecond);
         List<Event> events = eventPage.getContent();
         if(events.isEmpty()){
@@ -150,7 +148,6 @@ public class EventServiceImpl implements EventService {
                 .filter(EventUtils::eventValidation)
                 .map(event -> modelMapper.map(event, EventResponse.class))
                 .toList();
-
         return PageUtils.builder()
                 .content(eventResponseList)
                 .pageNo(eventPage.getNumber())
@@ -159,7 +156,6 @@ public class EventServiceImpl implements EventService {
                 .totalPage(eventPage.getTotalPages())
                 .isLast(eventPage.isLast())
                 .build();
-
     }
     private Pair<List<Event>, Long> executeQuery(Query query, Pageable pageable) {
         Assert.notNull(query, "TextQuery must not be null");
@@ -211,13 +207,39 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
+
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#category}")
+    @Override
+    public PageUtils publishEventByCategory(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String category) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Page<Event> eventPage = eventRepository.findAllByCategory(EventCategory.fromDisplayName(category),PageRequest.of(pageNo, pageSize, sort));
+        List<Event> events = new ArrayList<>();
+        eventPage.getContent().forEach(event -> {
+            if (EventUtils.eventValidation(event)) {
+                events.add(event);
+            }
+        });
+        List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
+                .collect(Collectors.toList());
+        return PageUtils.builder()
+                .content(eventResponses)
+                .pageNo(eventPage.getNumber())
+                .pageSize(eventPage.getSize())
+                .totalElements(eventPage.getTotalElements())
+                .totalPage(eventPage.getTotalPages())
+                .isLast(eventPage.isLast())
+                .build();
+
+    }
     @CachePut(cacheNames = "events", key = "#id")
     @Override
     public EventResponse updateEvent(String id, EventUpdateRequest updateEvent) {
         AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
         GeoResponse geoDetails = getGeoDetails(updateEvent);
         String actualLocation = extractActualLocation(geoDetails);
-        Point pointLocation = convertToCoordinates(geoDetails);
+        GeoLocation coordinates = extractGeoLocation(geoDetails);
+
         Event eventToUpdate = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
         if(!eventToUpdate.getAppUser().equals(appUser)){
@@ -230,7 +252,7 @@ public class EventServiceImpl implements EventService {
         eventToUpdate.setOrganizer(updateEvent.getOrganizer());
         eventToUpdate.setCategory(EventCategory.valueOf(updateEvent.getCategory()));
         eventToUpdate.setLocation(actualLocation);
-        eventToUpdate.setPointLocation(pointLocation);
+        eventToUpdate.setCoordinates(coordinates);
         eventToUpdate.setStartDate(updateEvent.getStartDate());
         eventToUpdate.setEndDate(updateEvent.getEndDate());
         eventToUpdate.setStartTime(updateEvent.getStartTime());

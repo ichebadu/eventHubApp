@@ -4,6 +4,7 @@ import com.decagon.eventhubbe.dto.request.EventRequest;
 import com.decagon.eventhubbe.dto.request.EventUpdateRequest;
 import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.utils.PageUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,9 @@ public interface EventService {
     EventResponse getEventById(String id);
 
     PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
+
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#category}")
+    PageUtils publishEventByCategory(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String category);
 
     EventResponse updateEvent(String id, EventUpdateRequest updateEvent);
 }

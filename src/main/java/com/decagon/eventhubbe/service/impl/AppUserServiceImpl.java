@@ -32,7 +32,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -113,7 +112,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response){
         String refreshToken;
         String username;
         String authHeader = request.getHeader("Authorization");

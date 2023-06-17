@@ -1,9 +1,9 @@
 package com.decagon.eventhubbe.domain.entities;
 
 import com.decagon.eventhubbe.ENUM.EventCategory;
+import com.decagon.eventhubbe.domain.entities.geoLocation.GeoLocation;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,7 +34,7 @@ public class Event {
     private String organizer;
     @Field("category")
     private EventCategory category;
-    private Point pointLocation;
+    private GeoLocation coordinates;
     @Indexed(name = "location_index")
     private String location;
     private String startDate;

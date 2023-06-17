@@ -1,5 +1,6 @@
 package com.decagon.eventhubbe.dto.response;
 
+import com.decagon.eventhubbe.domain.entities.geoLocation.GeoLocation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class EventResponse implements Serializable {
     private String bannerUrl;
     private String organizer;
     private String category;
-    private Point pointLocation;
+    private GeoLocation coordinates;
     private String location;
     private String startDate;
     private String endDate;

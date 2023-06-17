@@ -5,7 +5,6 @@ import com.decagon.eventhubbe.domain.entities.geoLocation.GeoResponse;
 import com.decagon.eventhubbe.domain.entities.geoLocation.Result;
 import com.decagon.eventhubbe.dto.request.EventRequest;
 import com.decagon.eventhubbe.dto.request.EventUpdateRequest;
-import org.springframework.data.geo.Point;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,16 +49,13 @@ public class LocationUtils {
         return "Unknown Location";
     }
 
-    public static Point convertToCoordinates(GeoResponse geoDetails) {
+    public static GeoLocation extractGeoLocation(GeoResponse geoDetails) {
         if (geoDetails != null && geoDetails.getResult() != null && geoDetails.getResult().length > 0) {
             Result firstResult = geoDetails.getResult()[0];
             if (firstResult.getGeometry() != null && firstResult.getGeometry().getLocation() != null) {
-                GeoLocation location = firstResult.getGeometry().getLocation();
-                double latitude = location.getLat();
-                double longitude = location.getLng();
-                return new Point(longitude, latitude);
+                return firstResult.getGeometry().getLocation();
             }
         }
-        return null; // or throw an exception, depending on your use case
+        return null;
     }
 }
