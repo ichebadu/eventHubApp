@@ -2,7 +2,6 @@ package com.decagon.eventhubbe.dto.request;
 
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 // refactor this class to a Reg request class and create a registration response
