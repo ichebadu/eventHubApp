@@ -25,10 +25,16 @@ public class AuthController {
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
 
-    @PostMapping("/register")
+    @PostMapping("/register-event-goer")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<RegistrationResponse>> register (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
-        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.register(registrationRequest, request));
+    public ResponseEntity<APIResponse<RegistrationResponse>> registerEventGoer (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerAsEventGoer(registrationRequest, request));
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+    @PostMapping("/register-event-creator")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<RegistrationResponse>> registerEventCreator (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerAsEventCreator(registrationRequest, request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
     @PostMapping("/authenticate")

@@ -10,15 +10,11 @@ import com.decagon.eventhubbe.exception.TokenNotFoundException;
 import com.decagon.eventhubbe.service.ConfirmationTokenService;
 import com.decagon.eventhubbe.utils.EmailUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.EmitUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -59,9 +55,10 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         if (appUser.getEnabled().equals(true)){
             return "User already verified, Proceed to login";
         }
-
-
-        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
+        if(confirmationTokenRepository.existsByAppUser(appUser)){
+            confirmationTokenRepository.delete(confirmationTokenRepository.findByAppUser(appUser));
+        }
+        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.applicationUrl(request)));
         return "please check your mail for verification link";
     }
 
@@ -70,6 +67,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
         ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token)
                 .orElseThrow(()->new TokenNotFoundException("Invalid Credential"));
         if(confirmationToken.getExpiresAt().before(new Date())){
+            confirmationTokenRepository.delete(confirmationToken);
            throw new TokenExpiredException("Token Expired");
 
         }

@@ -13,8 +13,11 @@ import java.io.IOException;
 
 @Service
 public interface AppUserService {
-    RegistrationResponse register(RegistrationRequest registrationRequest,
-                                  HttpServletRequest request);
+    RegistrationResponse registerAsEventGoer(RegistrationRequest registrationRequest,
+                                             HttpServletRequest request);
+
+    RegistrationResponse registerAsEventCreator(RegistrationRequest registrationRequest,
+                                                HttpServletRequest request);
 
     LoginResponse authenticate(LoginRequest loginRequest);
 

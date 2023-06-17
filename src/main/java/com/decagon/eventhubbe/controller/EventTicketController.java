@@ -1,10 +1,9 @@
 package com.decagon.eventhubbe.controller;
 
-import com.decagon.eventhubbe.dto.request.EventTicketRequest;
+import com.decagon.eventhubbe.dto.request.SaveTicketRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
-import com.decagon.eventhubbe.dto.response.EventTicketResponse;
+import com.decagon.eventhubbe.dto.response.SaveTicketResponse;
 import com.decagon.eventhubbe.dto.response.TicketsSalesResponse;
-import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.service.EventTicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +17,6 @@ import java.util.List;
 @RequestMapping("api/v1/ticket")
 public class EventTicketController {
     private final EventTicketService eventTicketService;
-    private final EventService eventService;
 
     @GetMapping("/view-event-sales/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
@@ -26,6 +24,20 @@ public class EventTicketController {
             (@PathVariable String eventId){
         APIResponse<List<TicketsSalesResponse>> apiResponse = new APIResponse<>
                 (eventTicketService.trackTicketSales(eventId));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/save-tickets")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<String>> saveTickets(@RequestBody SaveTicketRequest request){
+        APIResponse<String> apiResponse = new APIResponse<>(eventTicketService.saveTicket(request));
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/get-saved-tickets")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<List<SaveTicketResponse>>> getBookedTicket(){
+        APIResponse<List<SaveTicketResponse>> apiResponse = new APIResponse<>(eventTicketService.getSavedTickets());
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
