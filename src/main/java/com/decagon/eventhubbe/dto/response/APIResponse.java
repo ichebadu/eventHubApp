@@ -23,8 +23,6 @@ public class APIResponse<T> {
         this.time = DateUtils.saveDate(LocalDateTime.now());
         this.data = data;
     }
-
-
     // Rest of the class...
 }
 

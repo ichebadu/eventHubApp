@@ -96,18 +96,7 @@ public class EventHubExceptionHandler {
         return new ResponseEntity<>(apiResponse,HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<APIResponse<EventHubExceptionResponse>> tokenNotFound(TokenNotFoundException e,
-                                                                                HttpServletRequest request){
-        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
-                .time(saveLocalDate(LocalDateTime.now()))
-                .message(e.getMessage())
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .path(request.getRequestURI())
-                .build();
-        APIResponse<EventHubExceptionResponse> apiResponse =new APIResponse<>(exceptionResponse);
-        return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
-    }
+
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<APIResponse<EventHubExceptionResponse>> tokenExpired(TokenExpiredException e,
@@ -121,8 +110,20 @@ public class EventHubExceptionHandler {
         APIResponse<EventHubExceptionResponse> apiResponse =new APIResponse<>(exceptionResponse);
         return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<EventHubExceptionResponse> tokenNotFound(TokenNotFoundException e,
+                                                                  HttpServletRequest request){
+        EventHubExceptionResponse exceptionResponse = EventHubExceptionResponse.builder()
+                .time(saveLocalDate(LocalDateTime.now()))
+                .message(e.getMessage())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .path(request.getRequestURI())
+                .build();
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.NOT_FOUND);
+    }
     private String saveLocalDate(LocalDateTime date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd h:mm:ss a");
         return date.format(formatter);
     }
+
 }

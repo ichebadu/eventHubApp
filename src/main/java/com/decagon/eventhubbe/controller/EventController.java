@@ -7,6 +7,10 @@ import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.PageConstant;
 import com.decagon.eventhubbe.utils.PageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,10 +22,44 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
+@Tag(
+        name = "CRUD REST APIs for Event Resource"
+)
+
 public class EventController {
 
     private final EventService eventService;
 
+    @Operation(
+            summary = "Create Event",
+            description = "Create a new event."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Http status 201 CREATED"
+    )
+    @SecurityRequirement(
+            name = "Bear Authentication"
+    )
+    @PostMapping("/create")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
+        APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Add Event Banner",
+            description = "Add a banner image to an existing event."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Http status 201 CREATED"
+    )
+    @SecurityRequirement(
+            name = "Bear Authentication"
+    )
+    @PostMapping(value = "/create/{eventId}/event-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PostMapping(value = "/create")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestParam("eventRequest") String request,
@@ -31,6 +69,15 @@ public class EventController {
         APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest, file));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @Operation(
+            summary = "Get All Events",
+            description = "Retrieve all events with pagination and sorting."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
     @PutMapping("/activate-event/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> activateEvent(@PathVariable String eventId){
@@ -48,6 +95,16 @@ public class EventController {
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEvent(pageNo, pageSize, sortBy, sortDir));
         return ResponseEntity.ok().body(apiResponse);
     }
+
+
+    @Operation(
+            summary = "Search Events",
+            description = "Search events by keyword and location with pagination and sorting."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
     @GetMapping("/view-event-by-user/")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<PageUtils>> findAllEventsByUser(
@@ -86,6 +143,14 @@ public class EventController {
         return ResponseEntity.ok().body(apiResponse);
     }
 
+    @Operation(
+            summary = "Get Event by ID",
+            description = "Retrieve an event by its ID."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
     @GetMapping("/view-event/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> getEventById(
@@ -94,6 +159,17 @@ public class EventController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Operation(
+            summary = "Update Event",
+            description = "Update an existing event."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
+    @SecurityRequirement(
+            name = "Bear Authentication"
+    )
     @PutMapping("/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> updateEvent(
@@ -108,6 +184,17 @@ public class EventController {
     }
 
     // Implementing the deletion of Event ----->
+    @Operation(
+            summary = "Delete Event",
+            description = "Delete an existing event."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
+    @SecurityRequirement(
+            name = "Bear Authentication"
+    )
     @DeleteMapping("/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> deleteEvent(
