@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Document(collection = "users")
 @AllArgsConstructor
@@ -25,7 +24,7 @@ public class AppUser{
     private String firstName;
     private String lastName;
     private String phone;
-    private Date dateOfBirth;
+    private String dateOfBirth;
     private String password;
     private Boolean enabled;
     private UserType userType;

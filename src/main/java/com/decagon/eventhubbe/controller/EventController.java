@@ -47,6 +47,17 @@ public class EventController {
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEvent(pageNo, pageSize, sortBy, sortDir));
         return ResponseEntity.ok().body(apiResponse);
     }
+    @GetMapping("/view-event-by-category/")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<PageUtils>> findAllEventsByCategory(
+            @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
+            @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = PageConstant.sortBy) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = PageConstant.sortDir) String sortDir,
+            @RequestParam("category") String category) {
+        APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEventByCategory(pageNo, pageSize, sortBy, sortDir,category));
+        return ResponseEntity.ok().body(apiResponse);
+    }
     @GetMapping("/search-event")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<PageUtils>> findAllEventsByKeyword(

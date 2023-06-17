@@ -17,6 +17,7 @@ import com.decagon.eventhubbe.exception.InvalidCredentialsException;
 import com.decagon.eventhubbe.exception.UserDisabledException;
 import com.decagon.eventhubbe.security.JwtService;
 import com.decagon.eventhubbe.service.AppUserService;
+import com.decagon.eventhubbe.utils.DateUtils;
 import com.decagon.eventhubbe.utils.EmailUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +32,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -48,9 +48,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public RegistrationResponse registerAsEventGoer(RegistrationRequest registrationRequest,
                                                     HttpServletRequest request) {
-        System.out.println(registrationRequest.getDateOfBirth());
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
+        appUser.setDateOfBirth(DateUtils.saveDateOfBirth(registrationRequest.getDateOfBirth()));
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setUserType(UserType.EVENT_GOER);
         appUser.setEnabled(false);
@@ -68,6 +68,7 @@ public class AppUserServiceImpl implements AppUserService {
                                                        HttpServletRequest request) {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
+        appUser.setDateOfBirth(DateUtils.saveDateOfBirth(registrationRequest.getDateOfBirth()));
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         appUser.setUserType(UserType.EVENT_CREATOR);
         appUser.setEnabled(false);
@@ -111,7 +112,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public RefreshTokenResponse refreshToken(HttpServletRequest request, HttpServletResponse response){
         String refreshToken;
         String username;
         String authHeader = request.getHeader("Authorization");
