@@ -25,6 +25,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
        httpSecurity
+               .cors()
+               .and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
@@ -40,7 +42,7 @@ public class SecurityConfig {
                         "/webjars/**",
                         "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers("api/v1/bank/**",
+                .requestMatchers(
                         "/events/create",
                         "/events/create/{eventId}/event-banner",
                         "/events/{eventId}",

@@ -23,6 +23,7 @@ public class AccountController {
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<?>> getAccountName(@RequestParam String bankName,
                                             @RequestParam String accountNumber) {
+        System.out.println("jj");
         APIResponse<?> apiResponse = new APIResponse<>(accountService.getBankCodeAndSend(bankName,accountNumber));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
@@ -33,10 +34,10 @@ public class AccountController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/get-user-account/{userid}")
+    @GetMapping("/account")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<List<?>>> getAccountByUser(@PathVariable  String userid){
-        APIResponse<List<?>> apiResponse = new APIResponse<List<?>>(accountService.getAccountByLogedInUser(userid));
+    public ResponseEntity<APIResponse<List<?>>> getAccountByUser(){
+        APIResponse<List<?>> apiResponse = new APIResponse<>(accountService.getAccountByLogedInUser());
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
