@@ -28,7 +28,7 @@ public class DateUtils {
 
 //    converting a local time to time
     public static LocalTime getLocalTime(String time){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
         return LocalTime.parse(time,formatter);
     }
 }

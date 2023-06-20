@@ -22,20 +22,13 @@ public class EventController {
 
     private final EventService eventService;
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
-        APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest));
+    public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest,
+                                                                  @RequestParam("file") MultipartFile file) {
+        APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest, file));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @PostMapping(value = "/create/{eventId}/event-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<EventResponse>> addEventBanner(@PathVariable String eventId,
-            @RequestParam("file") MultipartFile file){
-        APIResponse<EventResponse> response = new APIResponse<>(eventService.addEventBanner(eventId,file));
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
-    }
-
     @GetMapping("/view-event/")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<PageUtils>> findAllEvents(
@@ -45,6 +38,17 @@ public class EventController {
             @RequestParam(value = "sortDir", defaultValue = PageConstant.sortDir) String sortDir) {
 
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEvent(pageNo, pageSize, sortBy, sortDir));
+        return ResponseEntity.ok().body(apiResponse);
+    }
+    @GetMapping("/view-event-by-user/")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<PageUtils>> findAllEventsByUser(
+            @RequestParam(value = "pageNo", defaultValue = PageConstant.pageNo) Integer pageNo,
+            @RequestParam(value = "pageSize", defaultValue = PageConstant.pageSize) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = PageConstant.sortBy) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = PageConstant.sortDir) String sortDir) {
+
+        APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEventByUser(pageNo, pageSize, sortBy, sortDir));
         return ResponseEntity.ok().body(apiResponse);
     }
     @GetMapping("/view-event-by-category/")
@@ -58,6 +62,7 @@ public class EventController {
         APIResponse<PageUtils> apiResponse = new APIResponse<>(eventService.publishEventByCategory(pageNo, pageSize, sortBy, sortDir,category));
         return ResponseEntity.ok().body(apiResponse);
     }
+
     @GetMapping("/search-event")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<PageUtils>> findAllEventsByKeyword(
@@ -85,9 +90,10 @@ public class EventController {
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> updateEvent(
             @PathVariable String eventId,
-            @RequestBody EventUpdateRequest updateEvent
+            @RequestBody EventUpdateRequest updateEvent,
+            MultipartFile file
     ){
-        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.updateEvent(eventId, updateEvent));
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.updateEvent(eventId, updateEvent, file));
         return new ResponseEntity<>(
                 apiResponse, HttpStatus.OK
         );

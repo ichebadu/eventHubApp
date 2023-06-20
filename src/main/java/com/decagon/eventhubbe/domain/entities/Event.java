@@ -45,6 +45,7 @@ public class Event {
     private String createdAt;
     private LocalDateTime date;
     private boolean isDeleted;
+    private boolean isExpired;
 
     @DBRef
     private AppUser appUser;
