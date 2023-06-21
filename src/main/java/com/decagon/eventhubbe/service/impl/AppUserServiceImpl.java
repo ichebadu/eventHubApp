@@ -46,31 +46,17 @@ public class AppUserServiceImpl implements AppUserService {
     private final ApplicationEventPublisher publisher;
 
     @Override
-    public RegistrationResponse registerAsEventGoer(RegistrationRequest registrationRequest,
+    public RegistrationResponse registerUser(RegistrationRequest registrationRequest, String usertype,
                                                     HttpServletRequest request) {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setDateOfBirth(DateUtils.saveDateOfBirth(registrationRequest.getDateOfBirth()));
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setUserType(UserType.EVENT_GOER);
-        appUser.setEnabled(false);
-        AppUser savedUser = appUserRepository.insert(appUser);
-        publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
-        return RegistrationResponse.builder()
-                .firstName(savedUser.getFirstName())
-                .lastName(savedUser.getLastName())
-                .message("Registration Successful")
-                .build();
-    }
-
-    @Override
-    public RegistrationResponse registerAsEventCreator(RegistrationRequest registrationRequest,
-                                                       HttpServletRequest request) {
-        validateUserExistence(registrationRequest.getEmail());
-        AppUser appUser = registrationRequestToAppUser(registrationRequest);
-        appUser.setDateOfBirth(DateUtils.saveDateOfBirth(registrationRequest.getDateOfBirth()));
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setUserType(UserType.EVENT_CREATOR);
+        if(usertype.equals("eventGoer")){
+            appUser.setUserType(UserType.EVENT_GOER);
+        }else if (usertype.equals("eventCreator")){
+            appUser.setUserType(UserType.EVENT_CREATOR);
+        }
         appUser.setEnabled(false);
         AppUser savedUser = appUserRepository.insert(appUser);
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));

@@ -54,7 +54,7 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper modelMapper;
 
     @Override
-    public EventResponse create(EventRequest request) {
+    public EventResponse create(EventRequest request,MultipartFile file) {
         AppUser user = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
 
         GeoResponse geoDetails = getGeoDetails(request);
@@ -74,6 +74,7 @@ public class EventServiceImpl implements EventService {
                 .coordinates(coordinates)
                 .organizer(request.getOrganizer())
                 .isDeleted(false)
+                .isExpired(false)
                 .startDate(request.getStartDate())
                 .startTime(request.getStartTime())
                 .endDate(request.getEndDate())
@@ -81,6 +82,8 @@ public class EventServiceImpl implements EventService {
                 .createdAt(DateUtils.saveDate(LocalDateTime.now()))
                 .build();
         Event savedEvent = eventRepository.save(event);
+        CloudinaryConfig cloudinaryConfig = new CloudinaryConfig();
+        savedEvent.setBannerUrl(cloudinaryConfig.imageLink(file,savedEvent.getId()));
         List<EventTicketRequest> ticketRequest = request.getTickets();
         ticketRequest.forEach(ticket -> eventTicketRepository.save(
                 EventTicket.builder()
@@ -92,17 +95,6 @@ public class EventServiceImpl implements EventService {
                         .build()
         ));
         savedEvent.setEventTickets(eventTicketRepository.findAllByEvent(savedEvent));
-        return modelMapper.map(eventRepository.save(savedEvent), EventResponse.class);
-    }
-    @Override
-    public EventResponse addEventBanner(String eventId, MultipartFile file){
-        Event event = eventRepository
-                .findById(eventId)
-                .orElseThrow(() ->
-                        new EventNotFoundException(eventId));
-        CloudinaryConfig cloudinaryConfig = new CloudinaryConfig();
-        event.setBannerUrl(cloudinaryConfig.imageLink(file,event.getId()));
-        Event savedEvent = eventRepository.save(event);
         return modelMapper.map(eventRepository.save(savedEvent), EventResponse.class);
     }
 
@@ -207,6 +199,33 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
+    @Override
+    public PageUtils publishEventByUser(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Page<Event> eventPage = eventRepository.findAllByAppUser(PageRequest.of(pageNo, pageSize, sort), appUser);
+        List<Event> events = new ArrayList<>();
+
+        eventPage.getContent().forEach(event -> {
+            if (!EventUtils.eventValidation(event)) {
+                event.setExpired(true);
+            }
+            events.add(event);
+        });
+        List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
+                .collect(Collectors.toList());
+        return PageUtils.builder()
+                .content(eventResponses)
+                .pageNo(eventPage.getNumber())
+                .pageSize(eventPage.getSize())
+                .totalElements(eventPage.getTotalElements())
+                .totalPage(eventPage.getTotalPages())
+                .isLast(eventPage.isLast())
+                .build();
+
+    }
 
     @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#category}")
     @Override
@@ -234,7 +253,7 @@ public class EventServiceImpl implements EventService {
     }
     @CachePut(cacheNames = "events", key = "#id")
     @Override
-    public EventResponse updateEvent(String id, EventUpdateRequest updateEvent) {
+    public EventResponse updateEvent(String id, EventUpdateRequest updateEvent, MultipartFile file) {
         AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
         GeoResponse geoDetails = getGeoDetails(updateEvent);
         String actualLocation = extractActualLocation(geoDetails);
@@ -257,6 +276,10 @@ public class EventServiceImpl implements EventService {
         eventToUpdate.setEndDate(updateEvent.getEndDate());
         eventToUpdate.setStartTime(updateEvent.getStartTime());
         eventToUpdate.setEndTime(updateEvent.getEndTime());
+        if(!file.isEmpty()){
+            CloudinaryConfig cloudinaryConfig = new CloudinaryConfig();
+            eventToUpdate.setBannerUrl(cloudinaryConfig.imageLink(file,eventToUpdate.getId()));
+        }
         return modelMapper.map(eventRepository.save(eventToUpdate), EventResponse.class);
     }
 

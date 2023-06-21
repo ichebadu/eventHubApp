@@ -11,9 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public interface EventService {
 
-    EventResponse create(EventRequest request);
-
-    EventResponse addEventBanner(String eventId, MultipartFile file);
+    EventResponse create(EventRequest request,MultipartFile file);
 
     //deletion of event ------>
     String deleteEvent(String id);
@@ -24,8 +22,10 @@ public interface EventService {
 
     PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
 
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#category}")
+    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
+    PageUtils publishEventByUser(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
+
     PageUtils publishEventByCategory(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String category);
 
-    EventResponse updateEvent(String id, EventUpdateRequest updateEvent);
+    EventResponse updateEvent(String id, EventUpdateRequest updateEvent, MultipartFile file);
 }

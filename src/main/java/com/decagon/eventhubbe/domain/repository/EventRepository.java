@@ -2,6 +2,7 @@ package com.decagon.eventhubbe.domain.repository;
 
 
 import com.decagon.eventhubbe.ENUM.EventCategory;
+import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.Event;
 import com.decagon.eventhubbe.dto.response.EventResponse;
 import jdk.jfr.Category;
@@ -21,4 +22,7 @@ public interface EventRepository extends MongoRepository<Event, String> {
     void deleteByTitle(String title);
 
     Page<Event> findAllByCategory(EventCategory category, PageRequest of);
+
+    Page<Event> findAllByAppUser(PageRequest of, AppUser appUser);
+
 }

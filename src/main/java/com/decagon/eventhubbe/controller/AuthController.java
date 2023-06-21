@@ -24,27 +24,24 @@ public class AuthController {
     private final AppUserService appUserService;
     private final ConfirmationTokenService confirmationTokenService;
 
-    @PostMapping("/register-event-goer")
+    @PostMapping("/register/{usertype}")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<RegistrationResponse>> registerEventGoer (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
-        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerAsEventGoer(registrationRequest, request));
-        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-    }
-    @PostMapping("/register-event-creator")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<RegistrationResponse>> registerEventCreator (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
-        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerAsEventCreator(registrationRequest, request));
+    public ResponseEntity<APIResponse<RegistrationResponse>> registerUser (@RequestBody RegistrationRequest registrationRequest,
+                                                                                @PathVariable String usertype, HttpServletRequest request) {
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerUser(registrationRequest, usertype, request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
     @PostMapping("/authenticate")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<LoginResponse>> authenticate(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<APIResponse<LoginResponse>> loginUser (@RequestBody LoginRequest loginRequest){
         APIResponse<LoginResponse> apiResponse = new APIResponse<>(appUserService.authenticate(loginRequest));
-        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
     @PostMapping("/refresh-token")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<RefreshTokenResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<APIResponse<RefreshTokenResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         APIResponse<RefreshTokenResponse> apiResponse = new APIResponse<>(appUserService.refreshToken(request,response));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
