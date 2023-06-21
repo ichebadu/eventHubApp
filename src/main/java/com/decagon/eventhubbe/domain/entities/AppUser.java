@@ -30,6 +30,7 @@ public class AppUser{
     private UserType userType;
     @DBRef
     private Account account;
+    private String url;
 
 
 
