@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 public class CloudinaryConfig {
-    @Value("${cloud-api-name}")
-    private String CLOUD_NAME;
-    @Value("${cloud-api-secret}")
-    private String CLOUD_SECRET;
-    @Value("${cloud-api-key}")
-    private String CLOUD_KEY;
+//    @Value("${cloud-api-name}")
+    private static final String CLOUD_NAME="dknryxg72";
+//    @Value("${cloud-api-secret}")
+    private static final String CLOUD_SECRET="boQo3txlmXUV2VpjvmJr1dc_FKc";
+//    @Value("${cloud-api-key}")
+    private static final String CLOUD_KEY="828638228684336";
     public String imageLink(MultipartFile file,String id){
 
         Map<String, String> config = new HashMap<>();
