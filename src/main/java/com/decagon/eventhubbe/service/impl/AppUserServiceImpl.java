@@ -135,11 +135,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public String uploadProfilePicture(MultipartFile file) {
-        AppUser user = appUserRepository.findByEmail(UserUtils.getUserEmailFromContext()).orElseThrow(()-> new AppUserNotFoundException("USER NOT FOUND"));
+        AppUser user = appUserRepository.findByEmail(UserUtils.getUserEmailFromContext())
+                .orElseThrow(()-> new AppUserNotFoundException("USER NOT FOUND"));
         CloudinaryConfig config = new CloudinaryConfig();
         String url =config.imageLink(file,user.getId());
-        user.setUrl(url);
-
+        user.setImageUrl(url);
         appUserRepository.save(user);
         return url;
     }

@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping(path = "api/v1/")
+@RequestMapping(path = "api/v1/user")
 @AllArgsConstructor
 public class AppUserController {
 
     private final AppUserService appUserService;
-    @PostMapping(value = "/upload/{file}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse<String>> uploadProfilePicture(@RequestParam("file") MultipartFile file){
         APIResponse<String> fileUpload = new APIResponse<>(appUserService.uploadProfilePicture(file));
         return new ResponseEntity<>(fileUpload, HttpStatus.OK);
