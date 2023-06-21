@@ -1,8 +1,10 @@
 package com.decagon.eventhubbe.dto.request;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,4 +25,5 @@ public class EventRequest {
     private String endDate;
     private String startTime;
     private String endTime;
+    private MultipartFile image;
 }
