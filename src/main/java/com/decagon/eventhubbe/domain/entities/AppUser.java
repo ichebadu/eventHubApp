@@ -28,8 +28,10 @@ public class AppUser{
     private String password;
     private Boolean enabled;
     private UserType userType;
+    private String imageUrl;
     @DBRef
     private Account account;
+
 
 
 

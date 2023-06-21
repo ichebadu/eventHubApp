@@ -1,6 +1,7 @@
 package com.decagon.eventhubbe.service.impl;
 
 import com.decagon.eventhubbe.ENUM.UserType;
+import com.decagon.eventhubbe.config.CloudinaryConfig;
 import com.decagon.eventhubbe.domain.entities.AppUser;
 import com.decagon.eventhubbe.domain.entities.JwtToken;
 import com.decagon.eventhubbe.domain.repository.AppUserRepository;
@@ -19,6 +20,7 @@ import com.decagon.eventhubbe.security.JwtService;
 import com.decagon.eventhubbe.service.AppUserService;
 import com.decagon.eventhubbe.utils.DateUtils;
 import com.decagon.eventhubbe.utils.EmailUtils;
+import com.decagon.eventhubbe.utils.UserUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 
@@ -94,6 +97,8 @@ public class AppUserServiceImpl implements AppUserService {
                 .accessToken(savedToken.getAccessToken())
                 .refreshToken(savedToken.getRefreshToken())
                 .userFullName(appUser.getFirstName()+" "+appUser.getLastName())
+                .userEmail(appUser.getEmail())
+                .imageUrl(appUser.getImageUrl())
                 .message("Login Successful")
                 .build();
     }
@@ -129,6 +134,17 @@ public class AppUserServiceImpl implements AppUserService {
             }
         }
         return null;
+    }
+
+    @Override
+    public String uploadProfilePicture(MultipartFile file) {
+        AppUser user = appUserRepository.findByEmail(UserUtils.getUserEmailFromContext())
+                .orElseThrow(()-> new AppUserNotFoundException("USER NOT FOUND"));
+        CloudinaryConfig config = new CloudinaryConfig();
+        String url =config.imageLink(file,user.getId());
+        user.setImageUrl(url);
+        appUserRepository.save(user);
+        return url;
     }
 
     private AppUser registrationRequestToAppUser (RegistrationRequest registrationRequest) {
