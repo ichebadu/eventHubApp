@@ -1,7 +1,9 @@
 package com.decagon.eventhubbe.controller;
 
+import com.decagon.eventhubbe.dto.request.LoginRequest;
 import com.decagon.eventhubbe.dto.request.RegistrationRequest;
 import com.decagon.eventhubbe.dto.response.APIResponse;
+import com.decagon.eventhubbe.dto.response.LoginResponse;
 import com.decagon.eventhubbe.dto.response.RefreshTokenResponse;
 import com.decagon.eventhubbe.dto.response.RegistrationResponse;
 import com.decagon.eventhubbe.service.AppUserService;
@@ -25,11 +27,18 @@ public class AuthController {
 
     @PostMapping("/register/{usertype}")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<RegistrationResponse>> registerEventGoer (@RequestBody RegistrationRequest registrationRequest,
+    public ResponseEntity<APIResponse<RegistrationResponse>> registerUser (@RequestBody RegistrationRequest registrationRequest,
                                                                                 @PathVariable String usertype, HttpServletRequest request) {
-        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerAsEventGoer(registrationRequest, usertype, request));
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerUser(registrationRequest, usertype, request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
+    @PostMapping("/authenticate")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<LoginResponse>> loginUser (@RequestBody LoginRequest loginRequest){
+        APIResponse<LoginResponse> apiResponse = new APIResponse<>(appUserService.authenticate(loginRequest));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/refresh-token")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<RefreshTokenResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response)

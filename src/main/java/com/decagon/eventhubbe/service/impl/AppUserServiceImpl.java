@@ -46,7 +46,7 @@ public class AppUserServiceImpl implements AppUserService {
     private final ApplicationEventPublisher publisher;
 
     @Override
-    public RegistrationResponse registerAsEventGoer(RegistrationRequest registrationRequest, String usertype,
+    public RegistrationResponse registerUser(RegistrationRequest registrationRequest, String usertype,
                                                     HttpServletRequest request) {
         validateUserExistence(registrationRequest.getEmail());
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
