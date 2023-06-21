@@ -96,6 +96,8 @@ public class AppUserServiceImpl implements AppUserService {
                 .accessToken(savedToken.getAccessToken())
                 .refreshToken(savedToken.getRefreshToken())
                 .userFullName(appUser.getFirstName()+" "+appUser.getLastName())
+                .userEmail(appUser.getEmail())
+                .imageUrl(appUser.getImageUrl())
                 .message("Login Successful")
                 .build();
     }
