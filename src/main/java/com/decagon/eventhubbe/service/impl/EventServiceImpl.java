@@ -129,7 +129,7 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(eventToDelete);
         return "Event with title : "+eventToDelete.getTitle()+" deleted successfully";
     }
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#keyword,#location}")
+//    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#keyword,#location}")
     @Override
     public PageUtils searchEventsByKeyword(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String keyword, String location) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
@@ -181,7 +181,7 @@ public class EventServiceImpl implements EventService {
         return mongoTemplate.count(query, Event.class);
     }
 
-//    @Cacheable(cacheNames = "events", key = "#id")
+    @Cacheable(cacheNames = "events", key = "#id")
     @Override
     public EventResponse getEventById(String id) {
         Event event = eventRepository.findById(id)
@@ -190,7 +190,7 @@ public class EventServiceImpl implements EventService {
 
     }
 
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
+//    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
     @Override
     public PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
@@ -244,7 +244,7 @@ public class EventServiceImpl implements EventService {
 
     }
 
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#category}")
+//    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir,#category}")
     @Override
     public PageUtils publishEventByCategory(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String category) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
