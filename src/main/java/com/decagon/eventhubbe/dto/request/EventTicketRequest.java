@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 public class EventTicketRequest {
+    private String id;
     private String ticketClass;
     private String description;
     private Double ticketPrice;
