@@ -13,6 +13,8 @@ public interface EventService {
 
     EventResponse create(EventRequest request,MultipartFile file);
 
+    EventResponse activateEvent(String id);
+
     //deletion of event ------>
     String deleteEvent(String id);
 
@@ -22,7 +24,7 @@ public interface EventService {
 
     PageUtils publishEvent(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
 
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
+//    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
     PageUtils publishEventByUser(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
 
     PageUtils publishEventByCategory(Integer pageNo, Integer pageSize, String sortBy, String sortDir, String category);
