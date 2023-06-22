@@ -63,6 +63,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setEnabled(false);
         AppUser savedUser = appUserRepository.insert(appUser);
         publisher.publishEvent(new RegistrationEvent(appUser, EmailUtils.frontEndAppUrl(request)));
+
         return RegistrationResponse.builder()
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())
@@ -156,7 +157,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
     public AppUser getUserByEmail(String email){
         return appUserRepository.findByEmail(email)
-                .orElseThrow(()-> new AppUserNotFoundException(email));
+                .orElseThrow(()-> new AppUserNotFoundException("User Not Found"));
     }
 
 }
