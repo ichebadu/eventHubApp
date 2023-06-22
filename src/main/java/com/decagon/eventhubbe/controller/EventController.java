@@ -28,8 +28,15 @@ public class EventController {
     public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestParam("eventRequest") String request,
                                                                   @RequestParam("file") MultipartFile file) {
         EventRequest eventRequest = new Gson().fromJson(request, EventRequest.class);
+        System.out.println(eventRequest.getTickets());
         APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest, file));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @PutMapping("/activate-event/{eventId}")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<EventResponse>> activateEvent(@PathVariable String eventId){
+        APIResponse<EventResponse> apiResponse = new APIResponse<>(eventService.activateEvent(eventId));
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
     @GetMapping("/view-event/")
     @CrossOrigin(origins = "http://localhost:5173")

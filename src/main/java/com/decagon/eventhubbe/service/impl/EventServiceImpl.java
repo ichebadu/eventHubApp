@@ -75,6 +75,7 @@ public class EventServiceImpl implements EventService {
                 .organizer(request.getOrganizer())
                 .isDeleted(false)
                 .isExpired(false)
+                .isActive(false)
                 .startDate(request.getStartDate())
                 .startTime(request.getStartTime())
                 .endDate(request.getEndDate())
@@ -96,6 +97,19 @@ public class EventServiceImpl implements EventService {
         ));
         savedEvent.setEventTickets(eventTicketRepository.findAllByEvent(savedEvent));
         return modelMapper.map(eventRepository.save(savedEvent), EventResponse.class);
+    }
+    @Override
+    public EventResponse activateEvent(String id){
+        Event eventToActivate = eventRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new EventNotFoundException(id));
+        AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
+        if(!eventToActivate.getAppUser().equals(appUser)){
+            throw new UnauthorizedException("Unauthorized! Event created by another user");
+        }
+        eventToActivate.setActive(true);
+        return modelMapper.map(eventRepository.save(eventToActivate), EventResponse.class);
     }
 
     // Implementing the deletion of Event ----->
@@ -137,7 +151,9 @@ public class EventServiceImpl implements EventService {
             throw  new EventNotFoundException(" search word is not found");
         }
         List<EventResponse> eventResponseList = events.stream()
-                .filter(EventUtils::eventValidation)
+                .filter(event -> {
+                    return event.isActive() && EventUtils.eventValidation(event);
+                })
                 .map(event -> modelMapper.map(event, EventResponse.class))
                 .toList();
         return PageUtils.builder()
@@ -165,7 +181,7 @@ public class EventServiceImpl implements EventService {
         return mongoTemplate.count(query, Event.class);
     }
 
-    @Cacheable(cacheNames = "events", key = "#id")
+//    @Cacheable(cacheNames = "events", key = "#id")
     @Override
     public EventResponse getEventById(String id) {
         Event event = eventRepository.findById(id)
@@ -183,7 +199,7 @@ public class EventServiceImpl implements EventService {
         List<Event> events = new ArrayList<>();
 
         eventPage.getContent().forEach(event -> {
-            if (EventUtils.eventValidation(event)) {
+            if (EventUtils.eventValidation(event) && event.isActive()) {
                 events.add(event);
             }
         });
@@ -199,7 +215,7 @@ public class EventServiceImpl implements EventService {
                 .build();
 
     }
-    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
+//    @Cacheable(cacheNames = "events",key = "{#pageNo,#pageSize,#sortBy,#sortDir}")
     @Override
     public PageUtils publishEventByUser(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
         AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
@@ -212,7 +228,8 @@ public class EventServiceImpl implements EventService {
             if (!EventUtils.eventValidation(event)) {
                 event.setExpired(true);
             }
-            events.add(event);
+                events.add(event);
+
         });
         List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
                 .collect(Collectors.toList());
@@ -235,7 +252,7 @@ public class EventServiceImpl implements EventService {
         Page<Event> eventPage = eventRepository.findAllByCategory(EventCategory.fromDisplayName(category),PageRequest.of(pageNo, pageSize, sort));
         List<Event> events = new ArrayList<>();
         eventPage.getContent().forEach(event -> {
-            if (EventUtils.eventValidation(event)) {
+            if (EventUtils.eventValidation(event) && event.isActive()) {
                 events.add(event);
             }
         });

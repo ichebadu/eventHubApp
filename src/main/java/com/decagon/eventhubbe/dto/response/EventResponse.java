@@ -27,5 +27,6 @@ public class EventResponse implements Serializable {
     private String startTime;
     private String endTime;
     private boolean isExpired;
+    private boolean isActive;
     private List<EventTicketResponse> tickets;
 }
