@@ -23,4 +23,5 @@ public class EventRequest {
     private String endDate;
     private String startTime;
     private String endTime;
+
 }

@@ -7,6 +7,7 @@ import com.decagon.eventhubbe.dto.response.EventResponse;
 import com.decagon.eventhubbe.service.EventService;
 import com.decagon.eventhubbe.utils.PageConstant;
 import com.decagon.eventhubbe.utils.PageUtils;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,10 +23,11 @@ public class EventController {
 
     private final EventService eventService;
 
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/create")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<EventResponse>> createEvent(@ModelAttribute EventRequest eventRequest,
+    public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestParam("eventRequest") String request,
                                                                   @RequestParam("file") MultipartFile file) {
+        EventRequest eventRequest = new Gson().fromJson(request, EventRequest.class);
         APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest, file));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
