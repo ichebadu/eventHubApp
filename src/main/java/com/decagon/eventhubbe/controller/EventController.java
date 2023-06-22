@@ -24,7 +24,7 @@ public class EventController {
 
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest,
+    public ResponseEntity<APIResponse<EventResponse>> createEvent(@ModelAttribute EventRequest eventRequest,
                                                                   @RequestParam("file") MultipartFile file) {
         APIResponse<EventResponse> response = new APIResponse<>(eventService.create(eventRequest, file));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
