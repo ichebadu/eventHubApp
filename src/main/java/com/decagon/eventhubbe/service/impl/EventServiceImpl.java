@@ -181,7 +181,7 @@ public class EventServiceImpl implements EventService {
         return mongoTemplate.count(query, Event.class);
     }
 
-    @Cacheable(cacheNames = "events", key = "#id")
+//    @Cacheable(cacheNames = "events", key = "#id")
     @Override
     public EventResponse getEventById(String id) {
         Event event = eventRepository.findById(id)

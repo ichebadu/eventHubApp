@@ -29,4 +29,5 @@ public class EventResponse implements Serializable {
     private boolean isExpired;
     private boolean isActive;
     private List<EventTicketResponse> tickets;
+    private UserResponse appUser;
 }

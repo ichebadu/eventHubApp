@@ -55,6 +55,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser appUser = registrationRequestToAppUser(registrationRequest);
         appUser.setDateOfBirth(DateUtils.saveDateOfBirth(registrationRequest.getDateOfBirth()));
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setImageUrl("http://res.cloudinary.com/dknryxg72/image/upload/c_fill,h_250,w_200/image_id6493fb8ee5746f5032a08154");
         if(usertype.equals("eventGoer")){
             appUser.setUserType(UserType.EVENT_GOER);
         }else if (usertype.equals("eventCreator")){
