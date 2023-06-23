@@ -104,8 +104,10 @@ public class EventServiceImpl implements EventService {
                 .findById(id)
                 .orElseThrow(() ->
                         new EventNotFoundException(id));
+        System.out.println(eventToActivate.getAppUser().getEmail());
         AppUser appUser = appUserService.getUserByEmail(UserUtils.getUserEmailFromContext());
-        if(!eventToActivate.getAppUser().equals(appUser)){
+        System.out.println(appUser.getEmail());
+        if(!eventToActivate.getAppUser().getEmail().equals(appUser.getEmail())){
             throw new UnauthorizedException("Unauthorized! Event created by another user");
         }
         eventToActivate.setActive(true);
@@ -228,7 +230,10 @@ public class EventServiceImpl implements EventService {
             if (!EventUtils.eventValidation(event)) {
                 event.setExpired(true);
             }
+            if(event.getAppUser().getEmail().equals(appUser.getEmail())){
                 events.add(event);
+            }
+
 
         });
         List<EventResponse> eventResponses = events.stream().map(event -> modelMapper.map(event, EventResponse.class))
