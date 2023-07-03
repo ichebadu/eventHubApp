@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,7 @@ public class EventController {
     @SecurityRequirement(
             name = "Bear Authentication"
     )
+    @PreAuthorize("hasRole('EVENT_CREATOR')")
     @PostMapping("/create")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> createEvent(@RequestBody EventRequest eventRequest) {
@@ -59,6 +61,7 @@ public class EventController {
     @SecurityRequirement(
             name = "Bear Authentication"
     )
+    @PreAuthorize("hasRole('EVENT_CREATOR')")
     @PostMapping(value = "/create/{eventId}/event-banner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PostMapping(value = "/create")
     @CrossOrigin(origins = "http://localhost:5173")
@@ -170,6 +173,7 @@ public class EventController {
     @SecurityRequirement(
             name = "Bear Authentication"
     )
+    @PreAuthorize("hasRole('EVENT_CREATOR')")
     @PutMapping("/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<EventResponse>> updateEvent(
@@ -195,6 +199,7 @@ public class EventController {
     @SecurityRequirement(
             name = "Bear Authentication"
     )
+    @PreAuthorize("hasRole('EVENT_CREATOR')")
     @DeleteMapping("/{eventId}")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> deleteEvent(
@@ -202,5 +207,4 @@ public class EventController {
         APIResponse<String> apiResponse = new APIResponse<>(eventService.deleteEvent(eventId));
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-
 }

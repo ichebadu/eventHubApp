@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 @SecurityRequirement(
         name = "Bear Authentication"
 )
+@PreAuthorize("hasRole('EVENT_CREATOR')")
 @Tag(
         name = "CRUD REST APIs for Event Resource"
 )
@@ -29,8 +31,8 @@ public class EventTicketController {
     private final EventTicketService eventTicketService;
 
     @Operation(
-            summary = "Delete Event",
-            description = "Delete an existing event."
+            summary = "Track Ticket Sales",
+            description = "Track ticket sales for an event."
     )
     @ApiResponse(
             responseCode = "200",
@@ -45,18 +47,32 @@ public class EventTicketController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Save Tickets",
+            description = "Save tickets for an event."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Http status 201 CREATED"
+    )
     @PostMapping("/save-tickets")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<String>> saveTickets(@RequestBody SaveTicketRequest request){
         APIResponse<String> apiResponse = new APIResponse<>(eventTicketService.saveTicket(request));
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
-
+    @Operation(
+            summary = "Get Saved Tickets",
+            description = "Retrieve the saved tickets."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http status 200 SUCCESS"
+    )
     @GetMapping("/get-saved-tickets")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<List<SaveTicketResponse>>> getBookedTicket(){
         APIResponse<List<SaveTicketResponse>> apiResponse = new APIResponse<>(eventTicketService.getSavedTickets());
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-
 }

@@ -26,7 +26,7 @@ import java.util.List;
 @SecurityRequirement(
         name = "Bear Authentication"
 )
-@PreAuthorize("hasRole('users')")
+@PreAuthorize("hasRole('EVENT_CREATOR')")
 @Tag(
         name = "CRUD REST APIs for Account Resource"
 )

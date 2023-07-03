@@ -41,6 +41,21 @@ public class AuthController {
 
     @PostMapping("/register")
     @PostMapping("/register/{usertype}")
+    @PostMapping("/register-event-goer")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public ResponseEntity<APIResponse<RegistrationResponse>> registerEventGoer (@RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
+        APIResponse<RegistrationResponse> apiResponse = new APIResponse<>(appUserService.registerAsEventGoer(registrationRequest, request));
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+    @Operation(
+            summary = "Event creator",
+            description = "Registered event-creator can create event."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Http status 201 CREATED"
+    )
+    @PostMapping("/register-event-creator")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<APIResponse<RegistrationResponse>> registerUser (@RequestBody RegistrationRequest registrationRequest,
                                                                                 @PathVariable String usertype, HttpServletRequest request) {
@@ -79,7 +94,6 @@ public class AuthController {
         APIResponse<RefreshTokenResponse> apiResponse = new APIResponse<>(appUserService.refreshToken(request,response));
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
-
 
     @Operation(
             summary = "Verify Email",
